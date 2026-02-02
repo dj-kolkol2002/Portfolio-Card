@@ -143,15 +143,10 @@ npm run preview
 - WordPress management and maintenance
 - Creating documentation and user guides
 
-### IT Support Intern - 2M Marek Workiewicz (2020-2021)
+### IT Support Intern - 2M Marek Workiewicz (2020)
 - Computer assembly and configuration in educational institutions
 - Workstation and server installation and configuration
 - IT procedures documentation
-
-### Community Moderator - Darklight SCP (2018-2020)
-- Gaming community moderation
-- Training new moderators
-- Organizing community events
 
 ## 🎨 Design Features
 
