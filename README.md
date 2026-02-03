@@ -162,7 +162,6 @@ npm run preview
 - 📧 Email: [jakubkolkowski5@gmail.com](mailto:jakubkolkowski5@gmail.com)
 - 💼 LinkedIn: [Jakub Kołkowski](https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/)
 - 🐙 GitHub: [dj20kolkol02](https://github.com/dj20kolkol02)
-- 💬 Discord: [Join My Discord](https://discord.gg/1079422845731487834)
 - 🎵 SoundCloud: [xikub](https://soundcloud.com/xikub)
 
 ## 📄 License
