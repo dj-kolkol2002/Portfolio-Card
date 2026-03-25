@@ -59,20 +59,20 @@
 
       <!-- Contact Section -->
       <div class="glass rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 animate-fade-in">
-        <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div class="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
             <FontAwesomeIcon :icon="['fas', 'envelope']" class="text-purple-400 text-xl sm:text-2xl" />
           </div>
           <h2 class="text-lg sm:text-xl font-semibold">{{ t.contact }}</h2>
         </div>
         
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <a href="mailto:jakubkolkowski5@gmail.com" 
              class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 rounded-lg transition-all duration-300">
             <FontAwesomeIcon :icon="['fas', 'envelope']" class="text-purple-400 text-sm sm:text-base" />
             <span class="text-xs sm:text-sm font-medium">Email</span>
           </a>
-          <a href="https://github.com/dj20kolkol02" 
+          <a href="https://github.com/dj-kolkol2002" 
              target="_blank"
              class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 rounded-lg transition-all duration-300">
             <FontAwesomeIcon :icon="['fab', 'github']" class="text-purple-400 text-sm sm:text-base" />
@@ -96,61 +96,110 @@
       <!-- Skills Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <!-- Web Development -->
-        <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up">
-          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div class="glass-hover flex flex-col h-full rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up">
+          <div class="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'code']" class="text-purple-400 text-xl sm:text-2xl" />
             </div>
             <h2 class="text-lg sm:text-xl font-semibold">{{ t.webDev }}</h2>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap justify-center content-center flex-1 gap-2.5 sm:gap-3">
             <SkillBadge v-for="skill in webSkills" :key="skill.name" :name="skill.name" :icon="skill.icon" />
           </div>
         </div>
 
         <!-- Infrastructure -->
-        <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.1s">
-          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div class="glass-hover flex flex-col h-full rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.1s">
+          <div class="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'server']" class="text-purple-400 text-xl sm:text-2xl" />
             </div>
             <h2 class="text-lg sm:text-xl font-semibold">{{ t.infrastructure }}</h2>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap justify-center content-center flex-1 gap-2.5 sm:gap-3">
             <SkillBadge v-for="skill in infraSkills" :key="skill.name" :name="skill.name" :icon="skill.icon" />
           </div>
         </div>
 
         <!-- Software -->
-        <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.2s">
-          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div class="glass-hover flex flex-col h-full rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.2s">
+          <div class="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'box']" class="text-purple-400 text-xl sm:text-2xl" />
             </div>
             <h2 class="text-lg sm:text-xl font-semibold">{{ t.software }}</h2>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap justify-center content-center flex-1 gap-2.5 sm:gap-3">
             <SkillBadge v-for="skill in softwareSkills" :key="skill.name" :name="skill.name" :icon="skill.icon" />
           </div>
         </div>
 
         <!-- AI Tools -->
-        <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.3s">
-          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+        <div class="glass-hover flex flex-col h-full rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 animate-slide-up" style="animation-delay: 0.3s">
+          <div class="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'brain']" class="text-purple-400 text-xl sm:text-2xl" />
             </div>
             <h2 class="text-lg sm:text-xl font-semibold">{{ t.aiTools }}</h2>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap justify-center content-center flex-1 gap-2.5 sm:gap-3">
             <SkillBadge v-for="skill in aiSkills" :key="skill.name" :name="skill.name" :icon="skill.icon" />
           </div>
         </div>
       </div>
 
+      <!-- Projects Section -->
+      <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 animate-fade-in cursor-pointer" @click="showProjects = !showProjects">
+        <div class="relative flex items-center justify-center mb-3 sm:mb-4">
+          <div class="flex items-center gap-2 sm:gap-3">
+            <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
+              <FontAwesomeIcon :icon="['fas', 'project-diagram']" class="text-purple-400 text-xl sm:text-2xl" />
+            </div>
+            <h2 class="text-lg sm:text-xl font-semibold">{{ t.projects }}</h2>
+          </div>
+          <FontAwesomeIcon 
+            :icon="['fas', 'chevron-down']" 
+            class="absolute right-0 text-purple-400 text-base sm:text-lg transition-transform duration-300"
+            :class="{ 'rotate-180': showProjects }"
+          />
+        </div>
+        
+        <transition 
+          enter-active-class="transition-all duration-300 ease-out"
+          leave-active-class="transition-all duration-300 ease-in"
+          enter-from-class="opacity-0 max-h-0"
+          enter-to-class="opacity-100 max-h-[1000px]"
+          leave-from-class="opacity-100 max-h-[1000px]"
+          leave-to-class="opacity-0 max-h-0"
+        >
+          <div v-if="showProjects" class="space-y-4 sm:space-y-6 overflow-hidden">
+            <div 
+              v-for="(project, index) in projectsList" 
+              :key="index"
+              class="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300"
+            >
+              <h3 class="text-lg sm:text-xl font-bold text-purple-300 mb-2">{{ project.title }}</h3>
+              <p class="text-sm text-gray-300 mb-4">{{ project.description }}</p>
+              
+              <!-- Technologies -->
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span v-for="tech in project.technologies" :key="tech" class="px-2 sm:px-3 py-1 bg-purple-500/20 text-purple-300 text-xs sm:text-sm rounded-md border border-purple-500/30">
+                  {{ tech }}
+                </span>
+              </div>
+              
+              <!-- Image Placeholder if they have one -->
+              <div class="w-full h-auto rounded-lg overflow-hidden border border-purple-500/30 relative group" v-if="project.image">
+                <img :src="project.image" :alt="project.title" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+
       <!-- Work Experience Section -->
       <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 animate-fade-in cursor-pointer" @click="showExperience = !showExperience">
-        <div class="flex items-center justify-between mb-3 sm:mb-4">
+        <div class="relative flex items-center justify-center mb-3 sm:mb-4">
           <div class="flex items-center gap-2 sm:gap-3">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'briefcase']" class="text-purple-400 text-xl sm:text-2xl" />
@@ -159,7 +208,7 @@
           </div>
           <FontAwesomeIcon 
             :icon="['fas', 'chevron-down']" 
-            class="text-purple-400 text-base sm:text-lg transition-transform duration-300"
+            class="absolute right-0 text-purple-400 text-base sm:text-lg transition-transform duration-300"
             :class="{ 'rotate-180': showExperience }"
           />
         </div>
@@ -193,7 +242,7 @@
 
       <!-- Certifications Section -->
       <div class="glass-hover rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 animate-fade-in cursor-pointer" @click="showCertificates = !showCertificates">
-        <div class="flex items-center justify-between mb-3 sm:mb-4">
+        <div class="relative flex items-center justify-center mb-3 sm:mb-4">
           <div class="flex items-center gap-2 sm:gap-3">
             <div class="p-1.5 sm:p-2 bg-purple-500/20 rounded-lg">
               <FontAwesomeIcon :icon="['fas', 'certificate']" class="text-purple-400 text-xl sm:text-2xl" />
@@ -202,7 +251,7 @@
           </div>
           <FontAwesomeIcon 
             :icon="['fas', 'chevron-down']" 
-            class="text-purple-400 text-base sm:text-lg transition-transform duration-300"
+            class="absolute right-0 text-purple-400 text-base sm:text-lg transition-transform duration-300"
             :class="{ 'rotate-180': showCertificates }"
           />
         </div>
@@ -239,6 +288,7 @@ const isLoading = ref(true)
 const loadingProgress = ref(0)
 const showCertificates = ref(false)
 const showExperience = ref(false)
+const showProjects = ref(false)
 const currentLanguage = ref('en')
 
 // Toggle language
@@ -257,7 +307,8 @@ const translations = {
     aiTools: 'AI Tools',
     workExperience: 'Work Experience',
     certifications: 'Certifications',
-    contact: 'Contact and Social'
+    contact: 'Contact and Social',
+    projects: 'Projects'
   },
   pl: {
     subtitle: 'Specjalista IT samouk',
@@ -268,7 +319,8 @@ const translations = {
     aiTools: 'Narzędzia AI',
     workExperience: 'Doświadczenie zawodowe',
     certifications: 'Certyfikaty',
-    contact: 'Kontakt i Social'
+    contact: 'Kontakt i Social',
+    projects: 'Projekty'
   }
 }
 
@@ -291,6 +343,29 @@ onMounted(() => {
   }, 100)
 })
 
+const projectsData = {
+  en: [
+    {
+      title: 'Rehamed Dashboard',
+      description: 'Administration panel for managing a physiotherapy clinic. Includes modules for patients, appointments, and schedules.',
+      technologies: ['Laravel', 'Tailwind CSS', 'MySQL', 'Docker'],
+      image: './rehamed.png',
+      link: 'https://github.com/dj-kolkol2002/Rehamed-Reservation-Management-System-for-Hospital-Unit'
+    }
+  ],
+  pl: [
+    {
+      title: 'Rehamed Dashboard',
+      description: '',
+      technologies: ['Vue.js', 'Tailwind CSS', 'Panel Admina'],
+      image: './rehamed.png',
+      link: 'https://github.com/dj-kolkol2002/Rehamed-Reservation-Management-System-for-Hospital-Unit'
+    }
+  ]
+}
+
+const projectsList = computed(() => projectsData[currentLanguage.value])
+
 const workExperienceData = {
   en: [
     {
@@ -306,7 +381,7 @@ const workExperienceData = {
     {
       position: 'IT Support Intern',
       company: '2M Marek Workiewicz',
-      period: '2020',
+      period: '2022',
       tasks: [
         'Computer assembly and configuration in educational institutions',
         'Workstation and server installation and configuration',
@@ -328,7 +403,7 @@ const workExperienceData = {
     {
       position: 'Praktykant IT Support',
       company: '2M Marek Workiewicz',
-      period: '2020',
+      period: '2022',
       tasks: [
         'Montaż i konfiguracja komputerów w instytucjach edukacyjnych',
         'Instalacja i konfiguracja stacji roboczych i serwerów',
@@ -343,7 +418,10 @@ const workExperience = computed(() => workExperienceData[currentLanguage.value])
 const certifications = [
   'Cisco CCNA Enterprise Networking, Security and Automation',
   'Cisco CCNA Network Security',
-  'Cisco CCNA Switching, Routing, and Wireless Essentials'
+  'Cisco CCNA Switching, Routing, and Wireless Essentials',
+  'LPI Linux Essentials',
+  'Technical Support Fundamentals',
+  'The Bits and Bytes of Computer Networking'
 ]
 
 const webSkills = [
