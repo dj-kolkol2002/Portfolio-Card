@@ -24,9 +24,17 @@ import {
     faCertificate,
     faAward,
     faChevronDown,
+    faChevronLeft,
+    faChevronRight,
     faBriefcase,
     faPalette,
-    faMusic
+    faMusic,
+    faProjectDiagram,
+    faPenNib,
+    faMousePointer,
+    faTerminal,
+    faLaptopCode,
+    faGraduationCap
 } from '@fortawesome/free-solid-svg-icons'
 import {
     faGithub,
@@ -48,7 +56,11 @@ import {
     faTrello,
     faApple,
     faGit,
-    faSoundcloud
+    faSoundcloud,
+    faLinux,
+    faClaude,
+    faOpenai,
+    faPython
 } from '@fortawesome/free-brands-svg-icons'
 
 // Add icons to library
@@ -71,9 +83,17 @@ library.add(
     faCertificate,
     faAward,
     faChevronDown,
+    faChevronLeft,
+    faChevronRight,
     faBriefcase,
     faPalette,
     faMusic,
+    faProjectDiagram,
+    faPenNib,
+    faMousePointer,
+    faTerminal,
+    faLaptopCode,
+    faGraduationCap,
     faGithub,
     faLinkedin,
     faDiscord,
@@ -93,7 +113,11 @@ library.add(
     faTrello,
     faApple,
     faGit,
-    faSoundcloud
+    faSoundcloud,
+    faLinux,
+    faClaude,
+    faOpenai,
+    faPython
 )
 
 const app = createApp(App)
