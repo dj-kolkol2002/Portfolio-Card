@@ -1,6 +1,6 @@
 # 🚀 Portfolio - Jakub Kołkowski
 
-Modern, interactive portfolio website showcasing my IT skills, work experience, and certifications. Built with Vue.js 3 and Tailwind CSS 4, featuring a sleek dark theme with glassmorphism effects and smooth animations.
+Modern, interactive portfolio website showcasing my IT skills, work experience, education, and certifications. Built with Vue.js 3 and Tailwind CSS 4, featuring a sleek dark theme with glassmorphism effects and smooth animations.
 
 ![Portfolio Preview](https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
@@ -14,7 +14,7 @@ Modern, interactive portfolio website showcasing my IT skills, work experience, 
 - ⚡ **Performance**: Lightning-fast loading with optimized animations
 - 🎭 **Interactive UI**: Smooth transitions and hover effects
 - 🔄 **Loading Screen**: Percentage-based progress indicator
-- 📊 **Collapsible Sections**: Expandable work experience and certifications
+- 📊 **Collapsible Sections**: Expandable work experience, education, and certifications
 
 ## 🛠️ Tech Stack
 
@@ -90,12 +90,17 @@ The optimized files will be generated in the `dist/` directory.
 npm run preview
 ```
 
+## 💻 Featured Projects
+
+- **Rehamed Management System** - Web application for managing a physiotherapy clinic built with Laravel, MySQL, Docker, and Stripe.
+- **Spam Detection** - Machine learning application built with Python and Gradio to detect spam messages.
+- **Active Directory & Windows Server Infrastructure** - Educational infrastructure deployment for centralized network management featuring AD, DHCP, DNS, GPO, and IIS.
+
 ## 💼 Showcased Skills
 
 ### Web Development
-- HTML 5, CSS, JavaScript
-- PHP, Laravel
-- WordPress CMS
+- HTML 5, CSS, JavaScript, PHP
+- Vue.js, Laravel, WordPress
 - Tailwind CSS
 - Docker
 - MySQL
@@ -103,47 +108,48 @@ npm run preview
 - Git
 
 ### Infrastructure & Networking
-- Ubuntu Server
-- Windows Server
+- Ubuntu Server, Windows Server
 - Active Directory
 - Cisco IOS
-- Apache
-- VMware
-- EVE-NG
-- TrueNAS
-- OPNsense
-- Veeam Backup
+- Apache, VMware
+- EVE-NG, TrueNAS, OPNsense
+- AnyDesk, HelpDesk.app, Veeam Backup
 
 ### Software & Tools
-- Visual Studio Code
-- MS Office 365
-- Google Workspace
+- Linux Mint, Visual Studio Code
+- MS Office 365, Google Workspace
 - ClickUp, Trello
-- Affinity
-- FL Studio
+- Affinity, FL Studio
 
 ### AI Tools
-- ChatGPT, Gemini, Claude
-- WriteSonic
-- Perplexity
-- GitHub Copilot
-- Cursor
-- Zencode
+- ChatGPT, Gemini, Claude, Perplexity, WriteSonic
+- GitHub Copilot, Cursor
+- Python, Qwen2.5-coder
 
 ## 📜 Certifications
 
 - Cisco CCNA Enterprise Networking, Security and Automation
-- Cisco CCNA Network Security
+- Cisco Network Security
 - Cisco CCNA Switching, Routing, and Wireless Essentials
+- LPI Linux Essentials
+- Technical Support Fundamentals
+- The Bits and Bytes of Computer Networking
 
-## 🎓 Work Experience
+## 🎓 Education
+
+- **DSW Ideis University**  
+  *Master's degree studies in National Security* (2026 - present)
+- **University of Applied Sciences in Nysa**  
+  *Bachelor of Engineering degree in Computer Science - Network and Information Systems Security* (2022 - 2026)
+
+## 💼 Work Experience
 
 ### Junior Customer Specialist - Prociv Sp. z o.o (2025)
 - Customer support through HelpDesk ticketing system
 - WordPress management and maintenance
 - Creating documentation and user guides
 
-### IT Support Intern - 2M Marek Workiewicz (2022)
+### IT Support Intern - 2M Marek Workiewicz (2024)
 - Computer assembly and configuration in educational institutions
 - Workstation and server installation and configuration
 - IT procedures documentation
@@ -176,4 +182,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-**Made by Jakub Kołkowski** | Self-taught IT Specialist from Poland 🇵🇱
+**Made by Jakub Kołkowski** | IT Enthusiast & Student from Poland 🇵🇱
