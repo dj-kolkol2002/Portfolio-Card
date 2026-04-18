@@ -448,11 +448,11 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Spam-Detector'
     },
     {
-      title: 'HTTP Server with GTK3 GUI',
-      description: 'A lightweight HTTP web server written in C with a GTK3 graphical user interface for easy control and monitoring.',
-      technologies: ['C', 'GTK3', 'HTTP', 'Linux'],
-      images: ['./server/server-c.png', './server/server-c1.png'],
-      link: 'https://github.com/dj-kolkol2002/HTTP-Server-App'
+      title: 'Active Directory & Windows Server Infrastructure',
+      description: 'Educational infrastructure deployment for centralized network management. Implements an Active Directory domain, DHCP, DNS, GPO, and IIS.',
+      technologies: ['Windows Server', 'Active Directory', 'DNS', 'DHCP', 'GPO', 'IIS'],
+      images: ['./active/forest.png', './active/users.png'],
+      link: 'https://github.com/dj-kolkol2002/Active-Directory'
     }
   ],
   pl: [
@@ -471,11 +471,11 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Spam-Detector'
     },
     {
-      title: 'Serwer HTTP z interfejsem GTK3',
-      description: 'Lekki serwer HTTP napisany w języku C z graficznym interfejsem użytkownika GTK do łatwej kontroli i monitorowania.',
-      technologies: ['C', 'GTK3', 'HTTP', 'Linux'],
-      images: ['./server/server-c.png', './server/server-c1.png'],
-      link: 'https://github.com/dj-kolkol2002/HTTP-Server-App'
+      title: 'Infrastruktura Active Directory & Windows Server',
+      description: 'Edukacyjne wdrożenie infrastruktury do scentralizowanego zarządzania siecią. Implementuje domenę Active Directory, DHCP, DNS, GPO oraz IIS.',
+      technologies: ['Windows Server', 'Active Directory', 'DNS', 'DHCP', 'GPO', 'IIS'],
+      images: ['./active/forest.png', './active/users.png'],
+      link: 'https://github.com/dj-kolkol2002/Active-Directory'
     }
   ]
 }
@@ -497,7 +497,7 @@ const workExperienceData = {
     {
       position: 'IT Support Intern',
       company: '2M Marek Workiewicz',
-      period: '2022',
+      period: '2024',
       tasks: [
         'Computer assembly and configuration in educational institutions',
         'Workstation and server installation and configuration',
@@ -519,7 +519,7 @@ const workExperienceData = {
     {
       position: 'Praktykant IT Support',
       company: '2M Marek Workiewicz',
-      period: '2022',
+      period: '2024',
       tasks: [
         'Montaż i konfiguracja komputerów w instytucjach edukacyjnych',
         'Instalacja i konfiguracja stacji roboczych i serwerów',
@@ -574,7 +574,7 @@ const education = computed(() => educationData[currentLanguage.value])
 
 const certifications = [
   'Cisco CCNA Enterprise Networking, Security and Automation',
-  'Cisco CCNA Network Security',
+  'Cisco Network Security',
   'Cisco CCNA Switching, Routing, and Wireless Essentials',
   'LPI Linux Essentials',
   'Technical Support Fundamentals',
