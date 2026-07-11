@@ -485,6 +485,12 @@ const projectsList = computed(() => projectsData[currentLanguage.value])
 const workExperienceData = {
   en: [
     {
+      position: 'Junior IT Field Technician',
+      company: 'M3 Group',
+      period: '2026',
+      tasks: []
+    },
+    {
       position: 'Junior Customer Specialist',
       company: 'Prociv Sp. z o.o',
       period: '2025',
@@ -506,6 +512,12 @@ const workExperienceData = {
     }
   ],
   pl: [
+    {
+      position: 'Młodszy Instalator sieci IT',
+      company: 'M3 Group',
+      period: '2026',
+      tasks: []
+    },
     {
       position: 'Młodszy Specjalista ds. Obsługi Klienta',
       company: 'Prociv Sp. z o.o',

@@ -144,6 +144,8 @@ npm run preview
 
 ## 💼 Work Experience
 
+### Junior IT Field Technician - M3 Group (2026)
+
 ### Junior Customer Specialist - Prociv Sp. z o.o (2025)
 - Customer support through HelpDesk ticketing system
 - WordPress management and maintenance
