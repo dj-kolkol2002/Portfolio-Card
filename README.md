@@ -145,6 +145,9 @@ npm run preview
 ## 💼 Work Experience
 
 ### Junior IT Field Technician - M3 Group (2026)
+- Installation of cable trays and laying of low-voltage cabling
+- Comprehensive construction and organization of RACK cabinets, including termination of patch panels and network outlets
+- Installation of CCTV cameras, Access Points, and alarms
 
 ### Junior Customer Specialist - Prociv Sp. z o.o (2025)
 - Customer support through HelpDesk ticketing system

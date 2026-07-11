@@ -488,7 +488,11 @@ const workExperienceData = {
       position: 'Junior IT Field Technician',
       company: 'M3 Group',
       period: '2026',
-      tasks: []
+      tasks: [
+        'Installation of cable trays and laying of low-voltage cabling',
+        'Comprehensive construction and organization of RACK cabinets, including termination of patch panels and network outlets',
+        'Installation of CCTV cameras, Access Points and alarms'
+      ]
     },
     {
       position: 'Junior Customer Specialist',
@@ -516,7 +520,11 @@ const workExperienceData = {
       position: 'Młodszy Instalator sieci IT',
       company: 'M3 Group',
       period: '2026',
-      tasks: []
+      tasks: [
+        'Montaż tras kablowych oraz układanie okablowania teletechnicznego',
+        'Kompleksowa budowa i organizacja szaf RACK, w tym terminowanie patchpaneli i gniazd sieciowych',
+        'Instalacja kamer CCTV, Access Point i alarmów'
+      ]
     },
     {
       position: 'Młodszy Specjalista ds. Obsługi Klienta',
