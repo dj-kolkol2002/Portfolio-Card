@@ -1,6 +1,6 @@
 # 🚀 Portfolio - Jakub Kołkowski
 
-Modern, interactive portfolio website showcasing my IT skills, work experience, education, and certifications. Built with Vue.js 3 and Tailwind CSS 4, featuring a sleek dark theme with glassmorphism effects and smooth animations.
+Dark, developer-focused portfolio website showcasing my IT skills, projects, work experience, education, and certifications. Built with Vue.js 3, Vite, Tailwind CSS 4, and FontAwesome.
 
 ![Portfolio Preview](https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
@@ -8,13 +8,11 @@ Modern, interactive portfolio website showcasing my IT skills, work experience, 
 
 ## ✨ Features
 
-- 🎨 **Modern Design**: Glassmorphism effects with purple gradient theme
+- 🎨 **Developer-style Design**: Dark layout with green terminal-inspired accents
 - 🌍 **Multi-language**: Seamless switching between English and Polish
 - 📱 **Fully Responsive**: Optimized for all devices from mobile to desktop
-- ⚡ **Performance**: Lightning-fast loading with optimized animations
-- 🎭 **Interactive UI**: Smooth transitions and hover effects
-- 🔄 **Loading Screen**: Percentage-based progress indicator
-- 📊 **Collapsible Sections**: Expandable work experience, education, and certifications
+- ⚡ **Performance**: Lightweight Vite build
+- 🎭 **Interactive UI**: Section navigation, hover states, and responsive cards
 
 ## 🛠️ Tech Stack
 
@@ -25,7 +23,6 @@ Modern, interactive portfolio website showcasing my IT skills, work experience, 
 
 ### Libraries & Tools
 - **FontAwesome** - Icon library for professional icons
-- **Lucide Vue** - Additional icon collection
 - **PostCSS** - CSS transformations
 
 ## 📂 Project Structure
@@ -38,10 +35,9 @@ portfolio/
 │   ├── App.vue                # Main application component
 │   └── style.css              # Global styles and animations
 ├── public/
-│   └── profile.jpg            # Profile photo
+│   └── fav.png                # Site icon
 ├── index.html                 # Entry HTML file
 ├── package.json               # Dependencies and scripts
-├── tailwind.config.js         # Tailwind configuration
 ├── vite.config.js             # Vite configuration
 └── README.md                  # This file
 ```

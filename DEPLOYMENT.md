@@ -187,11 +187,6 @@ Zmiany pojawią się w ciągu 1-2 minut!
 - Zbuduj projekt ponownie: `npm run build`
 - Wdróż ponownie
 
-### Problem: Zdjęcie profilowe nie działa
-**Rozwiązanie:**
-- Upewnij się że `profile.jpg` znajduje się w folderze `public/`
-- Ścieżka w kodzie to `/profile.jpg` (z `/` na początku)
-
 ## 🎯 Domena Niestandardowa (Opcjonalnie)
 
 Jeśli chcesz użyć własnej domeny (np. `jakubkolkowski.com`):
