@@ -4,8 +4,9 @@
       <a class="brand-mark" href="#home" aria-label="Jakub Kołkowski">JK</a>
 
       <nav class="nav-links">
-        <a v-for="item in navLinks" :key="item.href" :href="item.href" :aria-label="item.label" :title="item.label">
-          <FontAwesomeIcon :icon="item.icon" />
+        <a v-for="item in navLinks" :key="item.href" :href="item.href" :aria-label="item.label">
+          <FontAwesomeIcon class="nav-icon" :icon="item.icon" />
+          <span class="nav-label">{{ item.label }}</span>
         </a>
       </nav>
 
@@ -20,7 +21,7 @@
 
         <div class="hero-copy">
           <span class="pre-title">{{ t.hello }}</span>
-          <h1>
+          <h1 class="hover-title">
             Jakub
             <span>Kołkowski</span>
           </h1>
@@ -33,59 +34,95 @@
           </div>
         </div>
 
-        <div class="terminal-card" aria-label="Profile summary">
+        <div class="terminal-card" aria-label="Interactive profile terminal" @click="focusTerminal">
           <div class="terminal-top">
             <span></span>
             <span></span>
             <span></span>
           </div>
           <div class="terminal-body">
-            <p><span>$</span> whoami</p>
-            <strong>IT Specialist / Student / Builder</strong>
-            <p><span>$</span> focus</p>
-            <ul>
-              <li>Web Development</li>
-              <li>Infrastructure</li>
-              <li>HelpDesk & documentation</li>
-            </ul>
+            <div v-for="entry in terminalHistory" :key="entry.id" class="terminal-entry">
+              <p class="terminal-command"><span>$</span> {{ entry.command }}</p>
+              <strong v-if="entry.type === 'headline'">{{ entry.output }}</strong>
+              <ul v-else-if="entry.type === 'list'">
+                <li v-for="line in entry.output" :key="line">{{ line }}</li>
+              </ul>
+              <p v-else class="terminal-output">{{ entry.output }}</p>
+            </div>
+
+            <form class="terminal-input-row" @submit.prevent="runTerminalCommand">
+              <label for="terminal-input">$</label>
+              <input
+                id="terminal-input"
+                ref="terminalInputRef"
+                v-model="terminalInput"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Terminal command"
+                placeholder="type help"
+              >
+            </form>
           </div>
         </div>
 
         <span class="code-tag bottom">&lt;/body&gt;</span>
       </section>
 
-      <section id="projects" class="page-section projects-section">
+      <section id="projects" class="page-section projects-section" aria-labelledby="projects-title">
         <div class="section-heading">
           <span>&lt;section&gt;</span>
-          <h2>{{ t.projects }}</h2>
+          <h2 id="projects-title" class="hover-title">{{ t.projects }}</h2>
           <p>{{ t.projectsIntro }}</p>
         </div>
 
-        <div class="project-list">
+        <div class="projects-bento">
           <article
             v-for="(project, index) in projectsList"
-            :key="project.title"
-            class="project-card"
+            :key="project.id"
+            class="project-card project-bento-card"
+            :class="`project-bento-card--${project.layout}`"
+            :aria-labelledby="`project-${project.id}`"
           >
-            <div class="project-meta">
-              <span>{{ String(index + 1).padStart(2, '0') }}</span>
-              <span>{{ project.technologies[0] }}</span>
+            <div class="project-visual">
+              <img
+                :src="project.image"
+                :alt="project.imageAlt"
+                :width="project.width"
+                :height="project.height"
+                loading="lazy"
+                decoding="async"
+              >
             </div>
 
-            <div class="project-copy">
-              <h3>{{ project.title }}</h3>
-              <p>{{ project.description }}</p>
-            </div>
+            <div class="project-card-body">
+              <div class="project-meta">
+                <span aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+                <span>{{ project.category }}</span>
+              </div>
 
-            <div class="tech-row">
-              <span v-for="tech in project.technologies" :key="tech">{{ tech }}</span>
-            </div>
+              <div class="project-copy">
+                <h3 :id="`project-${project.id}`">{{ project.title }}</h3>
+                <p>{{ project.description }}</p>
+              </div>
 
-            <div class="project-footer">
-              <a class="project-link" :href="project.link" target="_blank" rel="noopener noreferrer">
-                <FontAwesomeIcon :icon="['fab', 'github']" />
-                <span>{{ t.repository }}</span>
-              </a>
+              <ul class="tech-row" :aria-label="t.technologies">
+                <li v-for="tech in project.technologies" :key="tech">{{ tech }}</li>
+              </ul>
+
+              <footer class="project-footer">
+                <a
+                  class="project-link"
+                  :href="project.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="`${t.repository}: ${project.title} — ${t.newTab}`"
+                >
+                  <FontAwesomeIcon :icon="['fab', 'github']" aria-hidden="true" />
+                  <span>{{ t.repository }}</span>
+                  <span class="project-link-arrow" aria-hidden="true">↗</span>
+                </a>
+              </footer>
             </div>
           </article>
         </div>
@@ -94,12 +131,24 @@
       <section id="skills" class="page-section">
         <div class="section-heading">
           <span>&lt;skills&gt;</span>
-          <h2>{{ t.skills }}</h2>
+          <h2 class="hover-title">{{ t.skills }}</h2>
           <p>{{ t.skillsIntro }}</p>
         </div>
 
         <div class="skill-groups">
-          <article v-for="group in skillGroups" :key="group.title" class="skill-group">
+          <article
+            v-for="group in skillGroups"
+            :key="group.id"
+            class="skill-group"
+            :class="{ 'is-dragging': draggedSkillGroup === group.id, 'is-drag-over': dragOverSkillGroup === group.id }"
+            :draggable="canDragSkillCards"
+            @dragstart="startSkillGroupDrag(group.id, $event)"
+            @dragenter.prevent="dragOverSkillGroup = group.id"
+            @dragover.prevent
+            @dragleave="clearSkillGroupDragOver(group.id)"
+            @drop.prevent="dropSkillGroup(group.id)"
+            @dragend="endSkillGroupDrag"
+          >
             <div class="group-heading">
               <FontAwesomeIcon :icon="group.icon" />
               <h3>{{ group.title }}</h3>
@@ -119,7 +168,7 @@
       <section id="experience" class="page-section">
         <div class="section-heading">
           <span>&lt;experience&gt;</span>
-          <h2>{{ t.workExperience }}</h2>
+          <h2 class="hover-title">{{ t.workExperience }}</h2>
           <p>{{ t.experienceIntro }}</p>
         </div>
 
@@ -143,7 +192,7 @@
         <div class="duo-panel">
           <div class="section-heading compact">
             <span>&lt;education&gt;</span>
-            <h2>{{ t.education }}</h2>
+            <h2 class="hover-title">{{ t.education }}</h2>
           </div>
 
           <div class="timeline-list compact">
@@ -165,7 +214,7 @@
         <div class="duo-panel">
           <div class="section-heading compact">
             <span>&lt;certs&gt;</span>
-            <h2>{{ t.certifications }}</h2>
+            <h2 class="hover-title">{{ t.certifications }}</h2>
           </div>
 
           <ul class="cert-list">
@@ -180,7 +229,7 @@
       <section id="contact" class="page-section contact-section">
         <div class="section-heading">
           <span>&lt;contact&gt;</span>
-          <h2>{{ t.contact }}</h2>
+          <h2 class="hover-title">{{ t.contact }}</h2>
           <p>{{ t.contactIntro }}</p>
         </div>
 
@@ -201,14 +250,117 @@
 
       <footer class="portfolio-footer">Jakub Kołkowski | 2026</footer>
     </main>
+
+    <SoundCloudPlayer :language="currentLanguage" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick, onBeforeUnmount, onMounted } from 'vue'
 import SkillBadge from './components/SkillBadge.vue'
+import SoundCloudPlayer from './components/SoundCloudPlayer.vue'
 
 const currentLanguage = ref('en')
+const terminalInput = ref('')
+const terminalInputRef = ref(null)
+const draggedSkillGroup = ref(null)
+const dragOverSkillGroup = ref(null)
+const skillGroupOrder = ref(['web', 'infrastructure', 'helpdesk', 'ai'])
+const canDragSkillCards = ref(true)
+let terminalEntryId = 0
+let skillDragMediaQuery
+
+const createTerminalEntry = (command, output, type = 'text') => ({
+  id: terminalEntryId++,
+  command,
+  output,
+  type
+})
+
+const terminalHistory = ref([
+  createTerminalEntry('whoami', 'IT Specialist / Builder', 'headline'),
+  createTerminalEntry('focus', ['Web Development', 'Infrastructure', 'HelpDesk & documentation'], 'list')
+])
+
+const terminalCommands = {
+  help: {
+    output: ['whoami', 'focus', 'skills', 'projects', 'contact', 'clear'],
+    type: 'list'
+  },
+  whoami: {
+    output: 'IT Specialist / Builder',
+    type: 'headline'
+  },
+  focus: {
+    output: ['Web Development', 'Infrastructure', 'HelpDesk & documentation'],
+    type: 'list'
+  },
+  skills: {
+    output: ['Vue.js', 'Laravel', 'Docker', 'Windows Server', 'Active Directory', 'pfSense'],
+    type: 'list'
+  },
+  projects: {
+    output: [
+      'Windows Server 2025 AD & PXE Homelab',
+      'Company Lab in EVE-NG',
+      'Enterprise Homelab & Web Hosting',
+      'Capyhelp Helpdesk App',
+      'Ubuntu Server Infrastructure',
+      'SSH Analyzer Linux'
+    ],
+    type: 'list'
+  },
+  contact: {
+    output: 'jakubkolkowski5@gmail.com',
+    type: 'text'
+  }
+}
+
+const focusTerminal = () => {
+  terminalInputRef.value?.focus()
+}
+
+const syncSkillDragMode = () => {
+  canDragSkillCards.value = !skillDragMediaQuery?.matches
+}
+
+onMounted(() => {
+  skillDragMediaQuery = window.matchMedia('(max-width: 780px)')
+  syncSkillDragMode()
+  skillDragMediaQuery.addEventListener('change', syncSkillDragMode)
+})
+
+onBeforeUnmount(() => {
+  skillDragMediaQuery?.removeEventListener('change', syncSkillDragMode)
+})
+
+const runTerminalCommand = async () => {
+  const command = terminalInput.value.trim()
+
+  if (!command) {
+    return
+  }
+
+  terminalInput.value = ''
+
+  if (command.toLowerCase() === 'clear') {
+    terminalHistory.value = []
+    await nextTick()
+    focusTerminal()
+    return
+  }
+
+  const response = terminalCommands[command.toLowerCase()]
+
+  terminalHistory.value.push(
+    response
+      ? createTerminalEntry(command, response.output, response.type)
+      : createTerminalEntry(command, `Command not found: ${command}. Type help.`, 'text')
+  )
+
+  await nextTick()
+  focusTerminal()
+}
 
 const contactLinks = [
   { label: 'Email', href: 'mailto:jakubkolkowski5@gmail.com', icon: ['fas', 'envelope'] },
@@ -227,13 +379,13 @@ const translations = {
   en: {
     hello: 'Hello, I am',
     subtitle: 'Self taught IT Specialist',
-    description: 'Young IT enthusiast and 4th year student from Poland, passionate about technology and continuous learning.',
+    description: 'Young IT enthusiast from Poland, passionate about technology and continuous learning.',
     contactAction: 'Contact me here',
     projectsAction: 'Show my work',
     webDev: 'Web Development',
     skills: 'Skills',
     infrastructure: 'Infrastructure',
-    software: 'Software',
+    helpdesk: 'HelpDesk',
     aiTools: 'AI Tools',
     workExperience: 'Work Experience',
     education: 'Education',
@@ -241,8 +393,10 @@ const translations = {
     contact: 'Contact and Social',
     projects: 'Projects',
     repository: 'Repository',
-    projectsIntro: 'Selected technical projects built around web systems, automation, infrastructure and practical problem solving.',
-    skillsIntro: 'Tools and technologies I use across web development, infrastructure, daily software work and AI-supported workflows.',
+    newTab: 'opens in a new tab',
+    technologies: 'Technologies used',
+    projectsIntro: 'Hands-on Windows and Linux administration, enterprise networking, self-hosting, helpdesk development and security automation.',
+    skillsIntro: 'Tools and technologies I use across web development, infrastructure, helpdesk work and AI-supported workflows.',
     experienceIntro: 'Hands-on IT work across field installation, support, documentation and customer-facing technical tasks.',
     contactIntro: 'The fastest way to reach me is email. You can also find my code, profile and music links below.',
     navHome: 'Home',
@@ -254,13 +408,13 @@ const translations = {
   pl: {
     hello: 'Cześć, jestem',
     subtitle: 'Specjalista IT samouk',
-    description: 'Młody entuzjasta IT i student 4 roku z Polski, pasjonujący się technologią i ciągłym rozwojem.',
+    description: 'Młody entuzjasta IT z Polski, pasjonujący się technologią i ciągłym rozwojem.',
     contactAction: 'Kontakt',
     projectsAction: 'Zobacz projekty',
     webDev: 'Web Development',
     skills: 'Umiejętności',
     infrastructure: 'Infrastruktura',
-    software: 'Oprogramowanie',
+    helpdesk: 'HelpDesk',
     aiTools: 'Narzędzia AI',
     workExperience: 'Doświadczenie zawodowe',
     education: 'Edukacja',
@@ -268,8 +422,10 @@ const translations = {
     contact: 'Kontakt i Social',
     projects: 'Projekty',
     repository: 'Repozytorium',
-    projectsIntro: 'Wybrane projekty techniczne związane z aplikacjami webowymi, automatyzacją, infrastrukturą i praktycznym rozwiązywaniem problemów.',
-    skillsIntro: 'Narzędzia i technologie, których używam przy web developmencie, infrastrukturze, codziennej pracy oraz procesach wspieranych przez AI.',
+    newTab: 'otwiera się w nowej karcie',
+    technologies: 'Wykorzystane technologie',
+    projectsIntro: 'Praktyczne projekty z administracji Windows i Linux, sieci firmowych, self-hostingu, aplikacji helpdesk oraz automatyzacji bezpieczeństwa.',
+    skillsIntro: 'Narzędzia i technologie, których używam przy web developmencie, infrastrukturze, pracy helpdesk oraz procesach wspieranych przez AI.',
     experienceIntro: 'Praktyczne doświadczenie IT obejmujące instalacje terenowe, support, dokumentację i zadania techniczne przy kontakcie z klientem.',
     contactIntro: 'Najszybciej złapiesz mnie przez email. Poniżej są też linki do kodu, profilu i muzyki.',
     navHome: 'Start',
@@ -290,50 +446,182 @@ const navLinks = computed(() => [
   { href: '#contact', label: t.value.navContact, icon: ['fas', 'envelope'] }
 ])
 
+const projectMedia = {
+  windows: {
+    layout: 'featured',
+    file: 'windows_server.jpg',
+    width: 739,
+    height: 415,
+    alt: {
+      en: 'Windows Server 2025 graphic over illuminated server racks',
+      pl: 'Grafika Windows Server 2025 na tle podświetlonych szaf serwerowych'
+    }
+  },
+  network: {
+    layout: 'network',
+    file: 'eve-ng.png',
+    width: 1447,
+    height: 1087,
+    alt: {
+      en: 'EVE-NG company network topology with pfSense, Cisco switches, three VLANs, and Debian and Zabbix servers',
+      pl: 'Topologia firmowej sieci EVE-NG z pfSense, przełącznikami Cisco, trzema VLAN-ami oraz serwerami Debian i Zabbix'
+    }
+  },
+  homelab: {
+    layout: 'homelab',
+    file: 'proxmox.png',
+    width: 1873,
+    height: 943,
+    alt: {
+      en: 'Proxmox VE dashboard showing pfSense, TrueNAS, Jellyfin, and web-server virtual machines',
+      pl: 'Panel Proxmox VE z maszynami wirtualnymi pfSense, TrueNAS, Jellyfin i serwerem WWW'
+    }
+  },
+  capyhelp: {
+    layout: 'app',
+    file: 'capyhelp.png',
+    width: 1912,
+    height: 961,
+    alt: {
+      en: 'Capyhelp dashboard with ticket queue, filters, statuses, and priorities',
+      pl: 'Panel Capyhelp z kolejką zgłoszeń, filtrami, statusami i priorytetami'
+    }
+  },
+  ubuntu: {
+    layout: 'linux',
+    file: 'ubuntu-server.jpg',
+    width: 900,
+    height: 586,
+    alt: {
+      en: 'Ubuntu Server logo on an orange background',
+      pl: 'Logo Ubuntu Server na pomarańczowym tle'
+    }
+  },
+  ssh: {
+    layout: 'security',
+    file: 'ssh-analyzer.png',
+    width: 419,
+    height: 274,
+    alt: {
+      en: 'SSH Analyzer report showing the SSH port and source of failed login attempts',
+      pl: 'Raport SSH Analyzer z portem SSH i źródłem nieudanych prób logowania'
+    }
+  }
+}
+
 const projectsData = {
   en: [
     {
-      title: 'Rehamed Management System Hospital Unit',
-      description: 'Web app for managing a physiotherapy clinic. Includes modules for patients, appointments, and schedules.',
-      technologies: ['Laravel', 'Tailwind CSS', 'MySQL', 'Docker', 'Mailtrap', 'Stripe'],
-      link: 'https://github.com/dj-kolkol2002/Rehamed-Reservation-Management-System-for-Hospital-Unit'
+      id: 'windows',
+      title: 'Windows Server 2025 AD & PXE Homelab',
+      description: 'Isolated Windows Server 2025 company lab with AD, DNS/DHCP, GPO, AGDLP file shares, an IIS intranet and Windows 11 deployment through WDS/PXE.',
+      category: 'Windows Infrastructure',
+      technologies: ['Windows Server 2025', 'Active Directory', 'WDS / PXE', 'PowerShell'],
+      link: 'https://github.com/dj-kolkol2002/Windows-Server-2025-Active-Directory-PXE-Homelab'
     },
     {
-      title: 'Spam Detection',
-      description: 'An application that checks whether a message is spam.',
-      technologies: ['Python', 'Machine Learning', 'Pandas', 'Gradio'],
-      link: 'https://github.com/dj-kolkol2002/Spam-Detector'
+      id: 'network',
+      title: 'Company Lab in EVE-NG',
+      description: 'Segmented company network in EVE-NG with three VLANs, pfSense routing and firewalling, Cisco switching, Samba and Zabbix monitoring over SNMP/SNMPv3.',
+      category: 'Network Lab',
+      technologies: ['EVE-NG', 'pfSense', 'Cisco IOSvL2', 'Zabbix'],
+      link: 'https://github.com/dj-kolkol2002/Company-Lab-in-EVE-NG'
     },
     {
-      title: 'Active Directory & Windows Server Infrastructure',
-      description: 'Educational infrastructure deployment for centralized network management. Implements an Active Directory domain, DHCP, DNS, GPO, and IIS.',
-      technologies: ['Windows Server', 'Active Directory', 'DNS', 'DHCP', 'GPO', 'IIS'],
-      link: 'https://github.com/dj-kolkol2002/Active-Directory'
+      id: 'homelab',
+      title: 'Enterprise Homelab & Web Hosting',
+      description: 'Self-hosted Proxmox environment with pfSense, TrueNAS/ZFS, Jellyfin and a dynamic LEMP website across VMs and LXC containers, remotely available through Tailscale.',
+      category: 'Homelab',
+      technologies: ['Proxmox VE', 'TrueNAS / ZFS', 'LEMP', 'Tailscale'],
+      link: 'https://github.com/dj-kolkol2002/Enterprise-Homelab-Infrastructure-Web-Hosting'
+    },
+    {
+      id: 'capyhelp',
+      title: 'Capyhelp Helpdesk App',
+      description: 'Docker-first helpdesk platform with tickets, real-time chat, SLA automation, PDF reports, ClamAV scanning and local AI features powered by Ollama.',
+      category: 'Full-stack App',
+      technologies: ['Laravel 13', 'Vue 3', 'Docker', 'Ollama'],
+      link: 'https://github.com/dj-kolkol2002/Capyhelp-Helpdesk-App'
+    },
+    {
+      id: 'ubuntu',
+      title: 'Ubuntu Server Infrastructure',
+      description: 'Ubuntu Server deployment with hardened SSH, Samba file sharing, WordPress on a LAMP stack, SSL and automated rotating backups using Bash and cron.',
+      category: 'Linux Infrastructure',
+      technologies: ['Ubuntu Server', 'OpenSSH', 'Samba', 'Bash / Cron'],
+      link: 'https://github.com/dj-kolkol2002/Ubuntu-Server-Infrastructure'
+    },
+    {
+      id: 'ssh',
+      title: 'SSH Analyzer Linux',
+      description: 'Bash security tool that parses SSH authentication logs, detects the active SSH port, ranks sources of failed logins and can automatically block abusive IPs with UFW.',
+      category: 'Security Automation',
+      technologies: ['Bash', 'OpenSSH', 'UFW', 'Log Analysis'],
+      link: 'https://github.com/dj-kolkol2002/SSH-Analyzer-Linux'
     }
   ],
   pl: [
     {
-      title: 'Rehamed System Zarządzania Kliniką',
-      description: 'Aplikacja internetowa do zarządzania gabinetem fizjoterapii. Zawiera moduły dotyczące pacjentów, wizyt i harmonogramów.',
-      technologies: ['Laravel', 'Tailwind CSS', 'MySQL', 'Docker', 'Mailtrap', 'Stripe'],
-      link: 'https://github.com/dj-kolkol2002/Rehamed-Reservation-Management-System-for-Hospital-Unit'
+      id: 'windows',
+      title: 'Windows Server 2025 — AD i PXE Homelab',
+      description: 'Izolowane laboratorium Windows Server 2025 z AD, DNS/DHCP, GPO, udziałami plików w modelu AGDLP, intranetem IIS i wdrażaniem Windows 11 przez WDS/PXE.',
+      category: 'Infrastruktura Windows',
+      technologies: ['Windows Server 2025', 'Active Directory', 'WDS / PXE', 'PowerShell'],
+      link: 'https://github.com/dj-kolkol2002/Windows-Server-2025-Active-Directory-PXE-Homelab'
     },
     {
-      title: 'Aplikacja antyspamowa',
-      description: 'Aplikacja sprawdzająca czy wiadomość nie jest spamem.',
-      technologies: ['Python', 'Machine Learning', 'Pandas', 'Gradio'],
-      link: 'https://github.com/dj-kolkol2002/Spam-Detector'
+      id: 'network',
+      title: 'Firmowe laboratorium w EVE-NG',
+      description: 'Segmentowana sieć firmowa w EVE-NG z trzema VLAN-ami, routingiem i zaporą pfSense, przełącznikami Cisco, Sambą oraz monitoringiem Zabbix przez SNMP/SNMPv3.',
+      category: 'Laboratorium sieciowe',
+      technologies: ['EVE-NG', 'pfSense', 'Cisco IOSvL2', 'Zabbix'],
+      link: 'https://github.com/dj-kolkol2002/Company-Lab-in-EVE-NG'
     },
     {
-      title: 'Infrastruktura Active Directory & Windows Server',
-      description: 'Edukacyjne wdrożenie infrastruktury do scentralizowanego zarządzania siecią. Implementuje domenę Active Directory, DHCP, DNS, GPO oraz IIS.',
-      technologies: ['Windows Server', 'Active Directory', 'DNS', 'DHCP', 'GPO', 'IIS'],
-      link: 'https://github.com/dj-kolkol2002/Active-Directory'
+      id: 'homelab',
+      title: 'Enterprise Homelab i hosting WWW',
+      description: 'Wirtualne środowisko Proxmox z pfSense, TrueNAS/ZFS, Jellyfinem i dynamiczną stroną LEMP w maszynach VM i kontenerach LXC, dostępne zdalnie przez Tailscale.',
+      category: 'Homelab',
+      technologies: ['Proxmox VE', 'TrueNAS / ZFS', 'LEMP', 'Tailscale'],
+      link: 'https://github.com/dj-kolkol2002/Enterprise-Homelab-Infrastructure-Web-Hosting'
+    },
+    {
+      id: 'capyhelp',
+      title: 'Capyhelp Helpdesk App',
+      description: 'Platforma helpdesk uruchamiana w Dockerze z obsługą zgłoszeń, czatem w czasie rzeczywistym, SLA, raportami PDF, skanowaniem ClamAV i lokalnymi funkcjami AI przez Ollama.',
+      category: 'Aplikacja full-stack',
+      technologies: ['Laravel 13', 'Vue 3', 'Docker', 'Ollama'],
+      link: 'https://github.com/dj-kolkol2002/Capyhelp-Helpdesk-App'
+    },
+    {
+      id: 'ubuntu',
+      title: 'Ubuntu Server Infrastructure',
+      description: 'Ubuntu Server z utwardzonym SSH, Sambą, WordPressem na stosie LAMP, HTTPS oraz automatycznymi kopiami zapasowymi z rotacją w Bashu i cronie.',
+      category: 'Infrastruktura Linux',
+      technologies: ['Ubuntu Server', 'OpenSSH', 'Samba', 'Bash / Cron'],
+      link: 'https://github.com/dj-kolkol2002/Ubuntu-Server-Infrastructure'
+    },
+    {
+      id: 'ssh',
+      title: 'SSH Analyzer Linux',
+      description: 'Skrypt Bash analizujący logi SSH, wykrywający aktywny port i źródła ataków brute-force oraz opcjonalnie blokujący adresy IP przez UFW.',
+      category: 'Cyberbezpieczeństwo',
+      technologies: ['Bash', 'OpenSSH', 'UFW', 'Analiza logów'],
+      link: 'https://github.com/dj-kolkol2002/SSH-Analyzer-Linux'
     }
   ]
 }
 
-const projectsList = computed(() => projectsData[currentLanguage.value])
+const projectsList = computed(() => projectsData[currentLanguage.value].map((project) => {
+  const media = projectMedia[project.id]
+
+  return {
+    ...project,
+    ...media,
+    image: `${import.meta.env.BASE_URL}projects/${media.file}`,
+    imageAlt: media.alt[currentLanguage.value]
+  }
+}))
 
 const workExperienceData = {
   en: [
@@ -407,14 +695,6 @@ const workExperience = computed(() => workExperienceData[currentLanguage.value])
 const educationData = {
   en: [
     {
-      institution: 'DSW Ideis University',
-      degree: 'National Security',
-      period: '2026 - present',
-      tasks: [
-        'Master\'s degree studies'
-      ]
-    },
-    {
       institution: 'University of Applied Sciences in Nysa',
       degree: 'Computer Science - Network and Information Systems Security',
       period: '2022 - 2026',
@@ -424,14 +704,6 @@ const educationData = {
     }
   ],
   pl: [
-    {
-      institution: 'Uniwersytet DSW Ideis',
-      degree: 'Bezpieczeństwo Narodowe',
-      period: '2026 - obecnie',
-      tasks: [
-        'Studia II stopnia magisterskie'
-      ]
-    },
     {
       institution: 'Państwowa Akademia Nauk Stosowanych w Nysie',
       degree: 'Informatyka - Bezpieczeństwo sieci i systemów informatycznych',
@@ -455,62 +727,122 @@ const certifications = [
 ]
 
 const webSkills = [
-  { name: 'HTML 5', icon: ['fab', 'html5'] },
+  { name: 'Visual Studio Code', icon: ['fas', 'code'] },
+  { name: 'Node.js', icon: ['fab', 'node-js'] },
+  { name: 'Git', icon: ['fab', 'git'] },
   { name: 'CSS', icon: ['fab', 'css3-alt'] },
+  { name: 'Tailwind CSS', icon: ['fas', 'fire'] },
+  { name: 'PHPstorm', icon: ['fas', 'laptop-code'] },
+  { name: 'Figma', icon: ['fab', 'figma'] },
+  { name: 'MySQL', icon: ['fas', 'database'] },
+  { name: 'Inertia.js', icon: ['fas', 'code'] },
   { name: 'JavaScript', icon: ['fab', 'js'] },
+  { name: 'Vue.js', icon: ['fab', 'vuejs'] },
   { name: 'PHP', icon: ['fab', 'php'] },
   { name: 'WordPress', icon: ['fab', 'wordpress'] },
   { name: 'Laravel', icon: ['fab', 'laravel'] },
-  { name: 'Vue.js', icon: ['fab', 'vuejs'] },
-  { name: 'Tailwind CSS', icon: ['fas', 'fire'] },
   { name: 'Docker', icon: ['fab', 'docker'] },
-  { name: 'MySQL', icon: ['fas', 'database'] },
-  { name: 'Figma', icon: ['fab', 'figma'] },
-  { name: 'Git', icon: ['fab', 'git'] }
+  { name: 'HTML 5', icon: ['fab', 'html5'] }
 ]
 
 const infraSkills = [
-  { name: 'Ubuntu Server', icon: ['fab', 'ubuntu'] },
-  { name: 'Windows Server', icon: ['fab', 'windows'] },
   { name: 'Active Directory', icon: ['fab', 'microsoft'] },
+  { name: 'Ubuntu Server', icon: ['fab', 'ubuntu'] },
+  { name: 'Tailscale', icon: ['fas', 'network-wired'] },
+  { name: 'Windows Server', icon: ['fab', 'windows'] },
   { name: 'Cisco IOS', icon: ['fas', 'network-wired'] },
-  { name: 'Apache', icon: ['fas', 'server'] },
-  { name: 'VMware', icon: ['fas', 'server'] },
+  { name: 'Debian', icon: ['fab', 'debian'] },
+  { name: 'Bash', icon: ['fab', 'linux'] },
+  { name: 'Veeam Backup', icon: ['fas', 'database'] },
+  { name: 'Proxmox VE', icon: ['fas', 'server'] },
   { name: 'EVE-NG', icon: ['fas', 'network-wired'] },
+  { name: 'Nginx', icon: ['fas', 'server'] },
+  { name: 'PowerShell', icon: ['fas', 'terminal'] },
+  { name: 'pfSense', icon: ['fas', 'shield-alt'] },
   { name: 'TrueNAS', icon: ['fas', 'database'] },
-  { name: 'OPNsense', icon: ['fas', 'shield-alt'] },
-  { name: 'AnyDesk', icon: ['fas', 'server'] },
-  { name: 'HelpDesk.app', icon: ['fas', 'lightbulb'] },
-  { name: 'Veeam Backup', icon: ['fas', 'database'] }
+  { name: 'VMware', icon: ['fas', 'server'] }
 ]
 
-const softwareSkills = [
-  { name: 'Linux Mint', icon: ['fab', 'linux'] },
-  { name: 'Visual Studio Code', icon: ['fas', 'code'] },
-  { name: 'MS Office 365', icon: ['fab', 'microsoft'] },
+const helpdeskSkills = [
   { name: 'Google Workspace', icon: ['fab', 'google'] },
+  { name: 'AnyDesk', icon: ['fas', 'server'] },
+  { name: 'Jira', icon: ['fab', 'jira'] },
+  { name: 'SSH', icon: ['fas', 'terminal'] },
+  { name: 'Microsoft 365', icon: ['fab', 'microsoft'] },
+  { name: 'TeamViewer', icon: ['fas', 'server'] },
+  { name: 'Odoo', icon: ['fas', 'server'] },
+  { name: 'ITIL', icon: ['fas', 'award'] },
+  { name: 'HelpDesk.app', icon: ['fas', 'lightbulb'] },
   { name: 'ClickUP', icon: ['fas', 'check-square'] },
-  { name: 'Trello', icon: ['fab', 'trello'] },
-  { name: 'Affinity', icon: ['fas', 'palette'] },
-  { name: 'FL Studio', icon: ['fas', 'music'] }
+  { name: 'Discord', icon: ['fab', 'discord'] },
+  { name: 'RDP', icon: ['fab', 'windows'] }
 ]
 
 const aiSkills = [
-  { name: 'ChatGPT', icon: ['fab', 'openai'] },
-  { name: 'Gemini', icon: ['fab', 'google'] },
-  { name: 'Claude', icon: ['fab', 'claude'] },
-  { name: 'WriteSonic', icon: ['fas', 'pen-nib'] },
-  { name: 'Perplexity', icon: ['fas', 'search'] },
   { name: 'Github Copilot', icon: ['fab', 'github'] },
-  { name: 'Cursor', icon: ['fas', 'mouse-pointer'] },
+  { name: 'Grok', icon: ['fas', 'brain'] },
+  { name: 'Qwen', icon: ['fas', 'laptop-code'] },
   { name: 'Python', icon: ['fab', 'python'] },
-  { name: 'Qwen2.5-coder', icon: ['fas', 'laptop-code'] }
+  { name: 'Perplexity', icon: ['fas', 'search'] },
+  { name: 'DeepSeek', icon: ['fas', 'search'] },
+  { name: 'Gemini', icon: ['fab', 'google'] },
+  { name: 'Cursor', icon: ['fas', 'mouse-pointer'] },
+  { name: 'WriteSonic', icon: ['fas', 'pen-nib'] },
+  { name: 'ChatGPT', icon: ['fab', 'openai'] },
+  { name: 'Claude', icon: ['fab', 'claude'] },
+  { name: 'Ollama', icon: ['fas', 'laptop-code'] }
 ]
 
-const skillGroups = computed(() => [
-  { title: t.value.webDev, icon: ['fas', 'code'], skills: webSkills },
-  { title: t.value.infrastructure, icon: ['fas', 'server'], skills: infraSkills },
-  { title: t.value.software, icon: ['fas', 'box'], skills: softwareSkills },
-  { title: t.value.aiTools, icon: ['fas', 'brain'], skills: aiSkills }
-])
+const skillGroupsMap = computed(() => ({
+  web: { id: 'web', title: t.value.webDev, icon: ['fas', 'code'], skills: webSkills },
+  infrastructure: { id: 'infrastructure', title: t.value.infrastructure, icon: ['fas', 'server'], skills: infraSkills },
+  helpdesk: { id: 'helpdesk', title: t.value.helpdesk, icon: ['fas', 'lightbulb'], skills: helpdeskSkills },
+  ai: { id: 'ai', title: t.value.aiTools, icon: ['fas', 'brain'], skills: aiSkills }
+}))
+
+const skillGroups = computed(() => skillGroupOrder.value.map((id) => skillGroupsMap.value[id]))
+
+const startSkillGroupDrag = (groupId, event) => {
+  draggedSkillGroup.value = groupId
+  dragOverSkillGroup.value = null
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', groupId)
+  }
+}
+
+const clearSkillGroupDragOver = (groupId) => {
+  if (dragOverSkillGroup.value === groupId) {
+    dragOverSkillGroup.value = null
+  }
+}
+
+const dropSkillGroup = (targetGroupId) => {
+  const sourceGroupId = draggedSkillGroup.value
+
+  if (!sourceGroupId || sourceGroupId === targetGroupId) {
+    endSkillGroupDrag()
+    return
+  }
+
+  const nextOrder = [...skillGroupOrder.value]
+  const sourceIndex = nextOrder.indexOf(sourceGroupId)
+  const targetIndex = nextOrder.indexOf(targetGroupId)
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    endSkillGroupDrag()
+    return
+  }
+
+  nextOrder.splice(sourceIndex, 1)
+  nextOrder.splice(targetIndex, 0, sourceGroupId)
+  skillGroupOrder.value = nextOrder
+  endSkillGroupDrag()
+}
+
+const endSkillGroupDrag = () => {
+  draggedSkillGroup.value = null
+  dragOverSkillGroup.value = null
+}
 </script>

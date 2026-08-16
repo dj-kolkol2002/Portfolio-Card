@@ -20,6 +20,7 @@ defineProps({
 
 <style scoped>
 .skill-badge {
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
   gap: 0.38rem;
@@ -37,6 +38,11 @@ defineProps({
   transition: background 140ms ease, border-color 140ms ease;
 }
 
+.skill-badge span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .skill-badge:hover {
   background: rgba(0, 255, 127, 0.12);
   border-color: rgba(0, 255, 127, 0.58);
@@ -49,5 +55,17 @@ defineProps({
 
 .skill-badge:hover .skill-badge-icon {
   color: var(--orange);
+}
+
+@media (max-width: 560px) {
+  .skill-badge {
+    min-height: 1.7rem;
+    padding: 0.28rem 0.44rem;
+    font-size: 0.68rem;
+  }
+
+  .skill-badge-icon {
+    font-size: 0.72rem;
+  }
 }
 </style>
