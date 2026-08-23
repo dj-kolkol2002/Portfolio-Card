@@ -11,15 +11,16 @@ A responsive, bilingual portfolio presenting my IT infrastructure, networking, s
 - Six project case-study cards with repository links
 - Skills, work experience, education, certifications, and contact sections
 - Draggable skill groups on desktop
-- Integrated SoundCloud player
+- SoundCloud player loaded only after user interaction
 - Responsive layout with `prefers-reduced-motion` support
+- Responsive WebP project images with native lazy loading
 
 ## Tech stack
 
 - Vue 3 (Composition API)
 - Vite 7
-- Tailwind CSS 4, PostCSS, and Autoprefixer
-- Font Awesome 7
+- Custom CSS, PostCSS, and Autoprefixer
+- Font Awesome 7 icon data rendered by a lightweight local SVG component
 
 ## Featured projects
 
@@ -64,13 +65,15 @@ npm run preview
 .
 ├── public/
 │   ├── projects/               # Project card images
-│   └── fav.png                 # Favicon
+│   └── favicon.svg             # Favicon
 ├── src/
 │   ├── components/
+│   │   ├── AppIcon.vue
 │   │   ├── SkillBadge.vue
 │   │   └── SoundCloudPlayer.vue
 │   ├── App.vue                 # Portfolio content and interactions
-│   ├── main.js                 # Vue and Font Awesome setup
+│   ├── icons.js                # Used Font Awesome icon definitions
+│   ├── main.js                 # Vue application setup
 │   └── style.css               # Global styles and responsive layout
 ├── dist/                       # Generated production build
 ├── index.html
@@ -82,7 +85,7 @@ npm run preview
 
 The Vite base path is configured as `/Portfolio-Card/`. The generated contents of `dist/` are published from the root of the `gh-pages` branch.
 
-Google Fonts and the SoundCloud widget require an internet connection. The portfolio itself is a static frontend and does not require a backend or environment variables.
+The portfolio uses system fonts and does not contact third-party services during its initial render. SoundCloud is connected only after the visitor opens the music player. The site is a static frontend and does not require a backend or environment variables.
 
 ## Contact
 

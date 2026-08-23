@@ -30,9 +30,9 @@
         :src="embedUrl"
         width="100%"
         height="166"
-        scrolling="no"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
+        loading="lazy"
+        allow="autoplay"
+        referrerpolicy="strict-origin-when-cross-origin"
         title="SoundCloud player: City in Rain by Xikub"
       ></iframe>
 
@@ -54,7 +54,6 @@
       :class="{ 'is-playing': isPlaying }"
       type="button"
       aria-controls="soundcloud-player-panel"
-      :aria-label="triggerAriaLabel"
       :aria-expanded="isOpen"
       @click="openPlayer"
     >
@@ -82,7 +81,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 
 const props = defineProps({
   language: {
@@ -91,14 +90,15 @@ const props = defineProps({
   }
 })
 
-const isOpen = ref(true)
-const hasLoaded = ref(true)
+const isOpen = ref(false)
+const hasLoaded = ref(false)
 const closeButtonRef = ref(null)
 const triggerButtonRef = ref(null)
 const soundCloudFrameRef = ref(null)
-const playbackState = ref('loading')
+const playbackState = ref('idle')
 let soundCloudWidget
 let soundCloudEvents
+let soundCloudInitialization
 let isDisposed = false
 
 const embedUrl = 'https://w.soundcloud.com/player/?url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F791538184&color=%2300ff7f&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false'
@@ -109,8 +109,6 @@ const translations = {
     loading: 'Connecting to SoundCloud',
     playing: 'Now playing',
     ready: 'Click to play',
-    openPlayer: 'Open the player and play City in Rain',
-    openWhilePlaying: 'Open music player — City in Rain is playing',
     minimize: 'Minimize music player',
     openSoundCloud: 'Open on SoundCloud'
   },
@@ -119,8 +117,6 @@ const translations = {
     loading: 'Łączenie z SoundCloud',
     playing: 'Teraz gra',
     ready: 'Kliknij, aby odtworzyć',
-    openPlayer: 'Otwórz odtwarzacz i odtwórz City in Rain',
-    openWhilePlaying: 'Otwórz odtwarzacz — City in Rain jest odtwarzany',
     minimize: 'Zminimalizuj odtwarzacz muzyki',
     openSoundCloud: 'Otwórz w SoundCloud'
   }
@@ -139,10 +135,6 @@ const playerStatusLabel = computed(() => {
 
   return labels.value.ready
 })
-const triggerAriaLabel = computed(() => (
-  isPlaying.value ? labels.value.openWhilePlaying : labels.value.openPlayer
-))
-
 const loadSoundCloudApi = () => {
   if (window.SC?.Widget) {
     return Promise.resolve(window.SC)
@@ -150,16 +142,38 @@ const loadSoundCloudApi = () => {
 
   return new Promise((resolve, reject) => {
     let script = document.getElementById('soundcloud-widget-api')
+    let timeoutId
+
+    const cleanup = () => {
+      window.clearTimeout(timeoutId)
+      script?.removeEventListener('load', handleLoad)
+      script?.removeEventListener('error', handleError)
+    }
 
     const handleLoad = () => {
+      cleanup()
+
       if (window.SC?.Widget) {
         resolve(window.SC)
       } else {
+        script?.remove()
         reject(new Error('SoundCloud Widget API is unavailable'))
       }
     }
 
-    const handleError = () => reject(new Error('SoundCloud Widget API failed to load'))
+    const handleError = () => {
+      cleanup()
+      script?.remove()
+      reject(new Error('SoundCloud Widget API failed to load'))
+    }
+
+    const handleTimeout = () => {
+      cleanup()
+      script?.remove()
+      reject(new Error('SoundCloud Widget API timed out'))
+    }
+
+    timeoutId = window.setTimeout(handleTimeout, 10000)
 
     if (!script) {
       script = document.createElement('script')
@@ -177,10 +191,13 @@ const loadSoundCloudApi = () => {
   })
 }
 
-onMounted(async () => {
-  await nextTick()
+const initializeSoundCloud = () => {
+  if (soundCloudInitialization) {
+    return soundCloudInitialization
+  }
 
-  try {
+  const initialization = (async () => {
+    await nextTick()
     const soundCloud = await loadSoundCloudApi()
 
     if (isDisposed || !soundCloudFrameRef.value) {
@@ -213,12 +230,15 @@ onMounted(async () => {
         playbackState.value = 'unavailable'
       })
     }
-  } catch {
-    if (!isDisposed) {
-      playbackState.value = 'unavailable'
-    }
-  }
-})
+  })()
+
+  soundCloudInitialization = initialization.catch((error) => {
+    soundCloudInitialization = undefined
+    throw error
+  })
+
+  return soundCloudInitialization
+}
 
 onBeforeUnmount(() => {
   isDisposed = true
@@ -242,11 +262,21 @@ onBeforeUnmount(() => {
 const openPlayer = async () => {
   hasLoaded.value = true
   isOpen.value = true
-  if (!isPlaying.value) {
-    soundCloudWidget?.play()
-  }
+  playbackState.value = 'loading'
   await nextTick()
   closeButtonRef.value?.focus()
+
+  try {
+    await initializeSoundCloud()
+
+    if (!isPlaying.value) {
+      soundCloudWidget?.play()
+    }
+  } catch {
+    if (!isDisposed) {
+      playbackState.value = 'unavailable'
+    }
+  }
 }
 
 const closePlayer = async () => {

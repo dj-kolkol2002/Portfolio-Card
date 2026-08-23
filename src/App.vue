@@ -1,7 +1,7 @@
 <template>
   <div class="app-shell">
     <aside class="side-nav" aria-label="Portfolio navigation">
-      <a class="brand-mark" href="#home" aria-label="Jakub Kołkowski">JK</a>
+      <a class="brand-mark" href="#home" aria-label="JK — Jakub Kołkowski">JK</a>
 
       <nav class="nav-links">
         <a v-for="item in navLinks" :key="item.href" :href="item.href" :aria-label="item.label">
@@ -87,11 +87,14 @@
             <div class="project-visual">
               <img
                 :src="project.image"
+                :srcset="project.imageSrcset"
                 :alt="project.imageAlt"
                 :width="project.width"
                 :height="project.height"
+                sizes="(max-width: 780px) calc(100vw - 2rem), (max-width: 1080px) 45vw, 30vw"
                 loading="lazy"
                 decoding="async"
+                fetchpriority="low"
               >
             </div>
 
@@ -449,9 +452,14 @@ const navLinks = computed(() => [
 const projectMedia = {
   windows: {
     layout: 'featured',
-    file: 'windows_server.jpg',
-    width: 739,
-    height: 415,
+    file: 'windows-server-960.webp',
+    sourceFiles: [
+      { file: 'windows-server-480.webp', width: 480 },
+      { file: 'windows-server-720.webp', width: 720 },
+      { file: 'windows-server-960.webp', width: 960 }
+    ],
+    width: 960,
+    height: 726,
     alt: {
       en: 'Windows Server 2025 graphic over illuminated server racks',
       pl: 'Grafika Windows Server 2025 na tle podświetlonych szaf serwerowych'
@@ -459,9 +467,14 @@ const projectMedia = {
   },
   network: {
     layout: 'network',
-    file: 'eve-ng.png',
-    width: 1447,
-    height: 1087,
+    file: 'eve-ng-960.webp',
+    sourceFiles: [
+      { file: 'eve-ng-480.webp', width: 480 },
+      { file: 'eve-ng-720.webp', width: 720 },
+      { file: 'eve-ng-960.webp', width: 960 }
+    ],
+    width: 960,
+    height: 721,
     alt: {
       en: 'EVE-NG company network topology with pfSense, Cisco switches, three VLANs, and Debian and Zabbix servers',
       pl: 'Topologia firmowej sieci EVE-NG z pfSense, przełącznikami Cisco, trzema VLAN-ami oraz serwerami Debian i Zabbix'
@@ -469,9 +482,14 @@ const projectMedia = {
   },
   homelab: {
     layout: 'homelab',
-    file: 'proxmox.png',
-    width: 1873,
-    height: 943,
+    file: 'proxmox-960.webp',
+    sourceFiles: [
+      { file: 'proxmox-480.webp', width: 480 },
+      { file: 'proxmox-720.webp', width: 720 },
+      { file: 'proxmox-960.webp', width: 960 }
+    ],
+    width: 960,
+    height: 483,
     alt: {
       en: 'Proxmox VE dashboard showing pfSense, TrueNAS, Jellyfin, and web-server virtual machines',
       pl: 'Panel Proxmox VE z maszynami wirtualnymi pfSense, TrueNAS, Jellyfin i serwerem WWW'
@@ -479,9 +497,14 @@ const projectMedia = {
   },
   capyhelp: {
     layout: 'app',
-    file: 'capyhelp.png',
-    width: 1912,
-    height: 961,
+    file: 'capyhelp-960.webp',
+    sourceFiles: [
+      { file: 'capyhelp-480.webp', width: 480 },
+      { file: 'capyhelp-720.webp', width: 720 },
+      { file: 'capyhelp-960.webp', width: 960 }
+    ],
+    width: 960,
+    height: 483,
     alt: {
       en: 'Capyhelp dashboard with ticket queue, filters, statuses, and priorities',
       pl: 'Panel Capyhelp z kolejką zgłoszeń, filtrami, statusami i priorytetami'
@@ -489,9 +512,13 @@ const projectMedia = {
   },
   ubuntu: {
     layout: 'linux',
-    file: 'ubuntu-server.jpg',
-    width: 900,
-    height: 586,
+    file: 'ubuntu-server-707.webp',
+    sourceFiles: [
+      { file: 'ubuntu-server-480.webp', width: 480 },
+      { file: 'ubuntu-server-707.webp', width: 707 }
+    ],
+    width: 707,
+    height: 432,
     alt: {
       en: 'Ubuntu Server logo on an orange background',
       pl: 'Logo Ubuntu Server na pomarańczowym tle'
@@ -499,7 +526,7 @@ const projectMedia = {
   },
   ssh: {
     layout: 'security',
-    file: 'ssh-analyzer.png',
+    file: 'ssh-analyzer-419.webp',
     width: 419,
     height: 274,
     alt: {
@@ -614,11 +641,15 @@ const projectsData = {
 
 const projectsList = computed(() => projectsData[currentLanguage.value].map((project) => {
   const media = projectMedia[project.id]
+  const projectAssetUrl = (file) => `${import.meta.env.BASE_URL}projects/${file}`
 
   return {
     ...project,
     ...media,
-    image: `${import.meta.env.BASE_URL}projects/${media.file}`,
+    image: projectAssetUrl(media.file),
+    imageSrcset: media.sourceFiles
+      ?.map((source) => `${projectAssetUrl(source.file)} ${source.width}w`)
+      .join(', '),
     imageAlt: media.alt[currentLanguage.value]
   }
 }))
