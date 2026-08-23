@@ -253,15 +253,12 @@
 
       <footer class="portfolio-footer">Jakub Kołkowski | 2026</footer>
     </main>
-
-    <SoundCloudPlayer :language="currentLanguage" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, nextTick, onBeforeUnmount, onMounted } from 'vue'
 import SkillBadge from './components/SkillBadge.vue'
-import SoundCloudPlayer from './components/SoundCloudPlayer.vue'
 
 const currentLanguage = ref('en')
 const terminalInput = ref('')
@@ -368,8 +365,7 @@ const runTerminalCommand = async () => {
 const contactLinks = [
   { label: 'Email', href: 'mailto:jakubkolkowski5@gmail.com', icon: ['fas', 'envelope'] },
   { label: 'GitHub', href: 'https://github.com/dj-kolkol2002', icon: ['fab', 'github'], external: true },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/', icon: ['fab', 'linkedin'], external: true },
-  { label: 'SoundCloud', href: 'https://soundcloud.com/xikub', icon: ['fab', 'soundcloud'], external: true }
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/', icon: ['fab', 'linkedin'], external: true }
 ]
 
 // Toggle language
@@ -401,7 +397,7 @@ const translations = {
     projectsIntro: 'Hands-on Windows and Linux administration, enterprise networking, self-hosting, helpdesk development and security automation.',
     skillsIntro: 'Tools and technologies I use across web development, infrastructure, helpdesk work and AI-supported workflows.',
     experienceIntro: 'Hands-on IT work across field installation, support, documentation and customer-facing technical tasks.',
-    contactIntro: 'The fastest way to reach me is email. You can also find my code, profile and music links below.',
+    contactIntro: 'The fastest way to reach me is email. You can also find my code and professional profile below.',
     navHome: 'Home',
     navProjects: 'Projects',
     navSkills: 'Skills',
@@ -430,7 +426,7 @@ const translations = {
     projectsIntro: 'Praktyczne projekty z administracji Windows i Linux, sieci firmowych, self-hostingu, aplikacji helpdesk oraz automatyzacji bezpieczeństwa.',
     skillsIntro: 'Narzędzia i technologie, których używam przy web developmencie, infrastrukturze, pracy helpdesk oraz procesach wspieranych przez AI.',
     experienceIntro: 'Praktyczne doświadczenie IT obejmujące instalacje terenowe, support, dokumentację i zadania techniczne przy kontakcie z klientem.',
-    contactIntro: 'Najszybciej złapiesz mnie przez email. Poniżej są też linki do kodu, profilu i muzyki.',
+    contactIntro: 'Najszybciej złapiesz mnie przez email. Poniżej znajdziesz też mój kod i profil zawodowy.',
     navHome: 'Start',
     navProjects: 'Projekty',
     navSkills: 'Skills',

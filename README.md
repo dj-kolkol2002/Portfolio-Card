@@ -11,7 +11,6 @@ A responsive, bilingual portfolio presenting my IT infrastructure, networking, s
 - Six project case-study cards with repository links
 - Skills, work experience, education, certifications, and contact sections
 - Draggable skill groups on desktop
-- SoundCloud player loaded only after user interaction
 - Responsive layout with `prefers-reduced-motion` support
 - Responsive WebP project images with native lazy loading
 
@@ -69,8 +68,7 @@ npm run preview
 ├── src/
 │   ├── components/
 │   │   ├── AppIcon.vue
-│   │   ├── SkillBadge.vue
-│   │   └── SoundCloudPlayer.vue
+│   │   └── SkillBadge.vue
 │   ├── App.vue                 # Portfolio content and interactions
 │   ├── icons.js                # Used Font Awesome icon definitions
 │   ├── main.js                 # Vue application setup
@@ -85,11 +83,10 @@ npm run preview
 
 The Vite base path is configured as `/Portfolio-Card/`. The generated contents of `dist/` are published from the root of the `gh-pages` branch.
 
-The portfolio uses system fonts and does not contact third-party services during its initial render. SoundCloud is connected only after the visitor opens the music player. The site is a static frontend and does not require a backend or environment variables.
+The portfolio uses system fonts and does not load third-party embeds. The site is a static frontend and does not require a backend or environment variables.
 
 ## Contact
 
 - [GitHub](https://github.com/dj-kolkol2002)
 - [LinkedIn](https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/)
-- [SoundCloud](https://soundcloud.com/xikub)
 - [Email](mailto:jakubkolkowski5@gmail.com)
