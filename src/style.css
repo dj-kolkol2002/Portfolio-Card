@@ -850,7 +850,14 @@ a:focus-visible {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   gap: 0.45rem;
+}
+
+@media (min-width: 641px) {
+  .tech-row {
+    min-height: 3.95rem;
+  }
 }
 
 .tech-row li {
