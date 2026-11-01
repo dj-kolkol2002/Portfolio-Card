@@ -707,8 +707,8 @@ a:focus-visible {
   --project-rgb: 103, 232, 249;
 }
 
-.project-bento-card--homelab {
-  --project-rgb: 255, 138, 91;
+.project-bento-card--fortigate {
+  --project-rgb: 239, 68, 68;
 }
 
 .project-bento-card--app {
@@ -753,13 +753,10 @@ a:focus-visible {
 
 .project-bento-card--network .project-visual img,
 .project-bento-card--security .project-visual img,
+.project-bento-card--fortigate .project-visual img,
 .project-bento-card--onboarding .project-visual img,
 .project-bento-card--kiosk .project-visual img {
   object-fit: contain;
-}
-
-.project-bento-card--homelab .project-visual img {
-  object-position: 18% 50%;
 }
 
 .project-bento-card--app .project-visual img {

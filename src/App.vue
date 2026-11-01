@@ -531,19 +531,19 @@ const projectMedia = {
       pl: 'Topologia firmowej sieci EVE-NG z pfSense, przełącznikami Cisco, trzema VLAN-ami oraz serwerami Debian i Zabbix'
     }
   },
-  homelab: {
-    layout: 'homelab',
-    file: 'proxmox-960.webp',
+  fortigate: {
+    layout: 'fortigate',
+    file: 'fortigate-unifi-960.webp',
     sourceFiles: [
-      { file: 'proxmox-480.webp', width: 480 },
-      { file: 'proxmox-720.webp', width: 720 },
-      { file: 'proxmox-960.webp', width: 960 }
+      { file: 'fortigate-unifi-480.webp', width: 480 },
+      { file: 'fortigate-unifi-720.webp', width: 720 },
+      { file: 'fortigate-unifi-960.webp', width: 960 }
     ],
     width: 960,
-    height: 483,
+    height: 558,
     alt: {
-      en: 'Proxmox VE dashboard showing pfSense, TrueNAS, Jellyfin, and web-server virtual machines',
-      pl: 'Panel Proxmox VE z maszynami wirtualnymi pfSense, TrueNAS, Jellyfin i serwerem WWW'
+      en: 'FortiGate 60F and UniFi network topology with native LAN, VLAN 20, two trunk links, a managed switch and a wireless access point',
+      pl: 'Topologia sieci FortiGate 60F i UniFi z natywną siecią LAN, VLAN-em 20, dwoma trunkami, przełącznikiem zarządzalnym i punktem dostępowym'
     }
   },
   capyhelp: {
@@ -607,12 +607,12 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Company-Lab-in-EVE-NG'
     },
     {
-      id: 'homelab',
-      title: 'Enterprise Homelab & Web Hosting',
-      description: 'Self-hosted Proxmox environment with pfSense, TrueNAS/ZFS, Jellyfin and a dynamic LEMP website across VMs and LXC containers, remotely available through Tailscale.',
-      category: 'Homelab',
-      technologies: ['Proxmox VE', 'TrueNAS / ZFS', 'LEMP', 'Tailscale'],
-      link: 'https://github.com/dj-kolkol2002/Enterprise-Homelab-Infrastructure-Web-Hosting'
+      id: 'fortigate',
+      title: 'FortiGate + UniFi VLAN WiFi Lab',
+      description: 'Physical network lab with a FortiGate 60F, UniFi managed switch and FlexHD access point, using VLAN 20, 802.1Q trunks, DHCP, NAT and firewall policies.',
+      category: 'Network Security Lab',
+      technologies: ['FortiGate 60F', 'UniFi', '802.1Q VLAN', 'DHCP / NAT'],
+      link: 'https://github.com/dj-kolkol2002/FortiGate-UniFi-VLAN-Lab-public'
     },
     {
       id: 'capyhelp',
@@ -657,12 +657,12 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Company-Lab-in-EVE-NG'
     },
     {
-      id: 'homelab',
-      title: 'Enterprise Homelab i hosting WWW',
-      description: 'Wirtualne środowisko Proxmox z pfSense, TrueNAS/ZFS, Jellyfinem i dynamiczną stroną LEMP w maszynach VM i kontenerach LXC, dostępne zdalnie przez Tailscale.',
-      category: 'Homelab',
-      technologies: ['Proxmox VE', 'TrueNAS / ZFS', 'LEMP', 'Tailscale'],
-      link: 'https://github.com/dj-kolkol2002/Enterprise-Homelab-Infrastructure-Web-Hosting'
+      id: 'fortigate',
+      title: 'FortiGate + UniFi VLAN WiFi Lab',
+      description: 'Fizyczne laboratorium sieciowe z FortiGate 60F, zarządzalnym przełącznikiem UniFi i punktem dostępowym FlexHD, wykorzystujące VLAN 20, trunki 802.1Q, DHCP, NAT i reguły zapory.',
+      category: 'Laboratorium bezpieczeństwa sieci',
+      technologies: ['FortiGate 60F', 'UniFi', '802.1Q VLAN', 'DHCP / NAT'],
+      link: 'https://github.com/dj-kolkol2002/FortiGate-UniFi-VLAN-Lab-public'
     },
     {
       id: 'capyhelp',

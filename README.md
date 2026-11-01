@@ -37,7 +37,7 @@ insets are respected.
 
 - [Windows Server 2025 Active Directory & PXE Homelab](https://github.com/dj-kolkol2002/Windows-Server-2025-Active-Directory-PXE-Homelab)
 - [Company Lab in EVE-NG](https://github.com/dj-kolkol2002/Company-Lab-in-EVE-NG)
-- [Enterprise Homelab Infrastructure & Web Hosting](https://github.com/dj-kolkol2002/Enterprise-Homelab-Infrastructure-Web-Hosting)
+- [FortiGate + UniFi VLAN WiFi Lab](https://github.com/dj-kolkol2002/FortiGate-UniFi-VLAN-Lab-public)
 - [Capyhelp Helpdesk App](https://github.com/dj-kolkol2002/Capyhelp-Helpdesk-App)
 - [Onboarding Manager](https://github.com/dj-kolkol2002/Autoinstalator_Onboarding)
 - [Raspberry Pi Enterprise Web Kiosk](https://github.com/dj-kolkol2002/Raspberry-Pie-Web-KIOSK)
