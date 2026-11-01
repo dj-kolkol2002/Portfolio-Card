@@ -20,18 +20,20 @@ defineProps({
 
 <style scoped>
 .skill-badge {
+  width: 100%;
   max-width: 100%;
   display: inline-flex;
   align-items: center;
-  gap: 0.38rem;
-  min-height: 1.85rem;
-  padding: 0.32rem 0.5rem;
-  border: 1px solid rgba(0, 255, 127, 0.22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 1.875rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: var(--surface-raised);
   color: var(--text);
-  font-family: 'Fira Code', monospace;
-  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
   font-weight: 500;
   line-height: 1.2;
   cursor: default;
@@ -44,11 +46,12 @@ defineProps({
 }
 
 .skill-badge:hover {
-  background: rgba(0, 255, 127, 0.12);
-  border-color: rgba(0, 255, 127, 0.58);
+  background: var(--orange-wash);
+  border-color: var(--line-orange);
 }
 
 .skill-badge-icon {
+  flex: 0 0 0.9rem;
   color: var(--accent);
   font-size: 0.78rem;
 }
@@ -59,13 +62,18 @@ defineProps({
 
 @media (max-width: 560px) {
   .skill-badge {
-    min-height: 1.7rem;
-    padding: 0.28rem 0.44rem;
-    font-size: 0.68rem;
+    gap: 0.45rem;
+    padding-inline: 0.5rem;
+    font-size: 0.75rem;
   }
 
   .skill-badge-icon {
     font-size: 0.72rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skill-badge {
+    transition: none;
   }
 }
 </style>

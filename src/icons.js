@@ -1,7 +1,6 @@
 import {
   faAward,
   faBrain,
-  faBriefcase,
   faCheckSquare,
   faCode,
   faDatabase,
@@ -48,7 +47,6 @@ import {
 export const iconDefinitions = {
   'fas:award': faAward,
   'fas:brain': faBrain,
-  'fas:briefcase': faBriefcase,
   'fas:check-square': faCheckSquare,
   'fas:code': faCode,
   'fas:database': faDatabase,

@@ -1,16 +1,23 @@
 <template>
   <div class="app-shell">
-    <aside class="side-nav" aria-label="Portfolio navigation">
+    <aside ref="navigationRef" class="side-nav" :aria-label="t.navigationLabel">
       <a class="brand-mark" href="#home" aria-label="JK — Jakub Kołkowski">JK</a>
 
       <nav class="nav-links">
-        <a v-for="item in navLinks" :key="item.href" :href="item.href" :aria-label="item.label">
+        <a
+          v-for="item in navLinks"
+          :key="item.href"
+          :href="item.href"
+          :aria-label="item.label"
+          :aria-current="activeSection === item.href.slice(1) ? 'location' : undefined"
+        >
           <FontAwesomeIcon class="nav-icon" :icon="item.icon" />
           <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-short-label" aria-hidden="true">{{ item.shortLabel }}</span>
         </a>
       </nav>
 
-      <button @click="toggleLanguage" class="lang-toggle" type="button">
+      <button @click="toggleLanguage" class="lang-toggle" type="button" :aria-label="t.switchLanguage" :title="t.switchLanguage">
         {{ currentLanguage === 'en' ? 'EN' : 'PL' }}
       </button>
     </aside>
@@ -21,7 +28,7 @@
 
         <div class="hero-copy">
           <span class="pre-title">{{ t.hello }}</span>
-          <h1 class="hover-title">
+          <h1 class="hero-title">
             Jakub
             <span>Kołkowski</span>
           </h1>
@@ -34,14 +41,14 @@
           </div>
         </div>
 
-        <div class="terminal-card" aria-label="Interactive profile terminal" @click="focusTerminal">
-          <div class="terminal-top">
-            <span></span>
-            <span></span>
-            <span></span>
+        <div class="terminal-card" :aria-label="t.terminalLabel" @click="focusTerminal">
+          <div class="terminal-top" aria-hidden="true">
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
           </div>
-          <div class="terminal-body">
-            <div v-for="entry in terminalHistory" :key="entry.id" class="terminal-entry">
+          <div ref="terminalBodyRef" class="terminal-body">
+            <div v-for="entry in terminalEntries" :key="entry.id" class="terminal-entry">
               <p class="terminal-command"><span>$</span> {{ entry.command }}</p>
               <strong v-if="entry.type === 'headline'">{{ entry.output }}</strong>
               <ul v-else-if="entry.type === 'list'">
@@ -49,7 +56,6 @@
               </ul>
               <p v-else class="terminal-output">{{ entry.output }}</p>
             </div>
-
             <form class="terminal-input-row" @submit.prevent="runTerminalCommand">
               <label for="terminal-input">$</label>
               <input
@@ -59,8 +65,9 @@
                 type="text"
                 autocomplete="off"
                 spellcheck="false"
-                aria-label="Terminal command"
-                placeholder="type help"
+                :aria-label="t.terminalCommandLabel"
+                :placeholder="t.terminalPlaceholder"
+                @focus="focusTerminal"
               >
             </form>
           </div>
@@ -76,7 +83,32 @@
           <p>{{ t.projectsIntro }}</p>
         </div>
 
-        <div class="projects-bento">
+        <div class="project-gallery-toolbar">
+          <p id="project-gallery-hint">{{ t.projectGalleryHint }}</p>
+          <div class="project-gallery-controls">
+            <span class="project-gallery-status" role="status" aria-live="polite" aria-atomic="true">
+              {{ projectStart + 1 }}<template v-if="projectVisibleCount > 1">–{{ projectEnd }}</template> / {{ projectsList.length }}
+            </span>
+            <button type="button" :aria-label="t.previousProjects" aria-controls="project-gallery" :disabled="projectStart === 0" @click="moveProjects(-projectVisibleCount)">
+              <span aria-hidden="true">←</span>
+            </button>
+            <button type="button" :aria-label="t.nextProjects" aria-controls="project-gallery" :disabled="projectEnd === projectsList.length" @click="moveProjects(projectVisibleCount)">
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="project-gallery"
+          ref="projectGalleryRef"
+          class="projects-bento"
+          role="region"
+          :aria-label="t.projectGalleryLabel"
+          aria-describedby="project-gallery-hint"
+          tabindex="0"
+          @scroll.passive="updateProjectPosition"
+          @keydown="handleProjectGalleryKey"
+        >
           <article
             v-for="(project, index) in projectsList"
             :key="project.id"
@@ -91,7 +123,7 @@
                 :alt="project.imageAlt"
                 :width="project.width"
                 :height="project.height"
-                sizes="(max-width: 780px) calc(100vw - 2rem), (max-width: 1080px) 45vw, 30vw"
+                sizes="(max-width: 640px) calc(100vw - 2rem), (max-width: 1080px) 45vw, (max-width: 1508px) 30vw, 420px"
                 loading="lazy"
                 decoding="async"
                 fetchpriority="low"
@@ -143,49 +175,18 @@
             v-for="group in skillGroups"
             :key="group.id"
             class="skill-group"
-            :class="{ 'is-dragging': draggedSkillGroup === group.id, 'is-drag-over': dragOverSkillGroup === group.id }"
-            :draggable="canDragSkillCards"
-            @dragstart="startSkillGroupDrag(group.id, $event)"
-            @dragenter.prevent="dragOverSkillGroup = group.id"
-            @dragover.prevent
-            @dragleave="clearSkillGroupDragOver(group.id)"
-            @drop.prevent="dropSkillGroup(group.id)"
-            @dragend="endSkillGroupDrag"
           >
             <div class="group-heading">
-              <FontAwesomeIcon :icon="group.icon" />
-              <h3>{{ group.title }}</h3>
-            </div>
-            <div class="skill-list">
-              <SkillBadge
-                v-for="skill in group.skills"
-                :key="skill.name"
-                :name="skill.name"
-                :icon="skill.icon"
-              />
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="experience" class="page-section">
-        <div class="section-heading">
-          <span>&lt;experience&gt;</span>
-          <h2 class="hover-title">{{ t.workExperience }}</h2>
-          <p>{{ t.experienceIntro }}</p>
-        </div>
-
-        <div class="timeline-list">
-          <article v-for="exp in workExperience" :key="`${exp.company}-${exp.period}`" class="timeline-item">
-            <div class="timeline-head">
-              <div>
-                <h3>{{ exp.position }}</h3>
-                <p class="timeline-place">{{ exp.company }}</p>
+              <span class="group-icon"><FontAwesomeIcon :icon="group.icon" /></span>
+              <div class="group-intro">
+                <h3>{{ group.title }}</h3>
+                <p>{{ t.skillDescriptions[group.id] }}</p>
               </div>
-              <span>{{ exp.period }}</span>
             </div>
-            <ul>
-              <li v-for="task in exp.tasks" :key="task">{{ task }}</li>
+            <ul class="skill-list" :aria-label="group.title">
+              <li v-for="skill in group.skills" :key="skill.name">
+                <SkillBadge :name="skill.name" :icon="skill.icon" />
+              </li>
             </ul>
           </article>
         </div>
@@ -199,13 +200,13 @@
           </div>
 
           <div class="timeline-list compact">
-            <article v-for="edu in education" :key="`${edu.institution}-${edu.period}`" class="timeline-item">
+            <article v-for="edu in education" :key="`${edu.degree}-${edu.institution}-${edu.period}`" class="timeline-item">
               <div class="timeline-head">
                 <div>
-                  <h3>{{ edu.institution }}</h3>
-                  <p class="timeline-place">{{ edu.degree }}</p>
+                  <h3>{{ edu.institution || edu.degree }}</h3>
+                  <p v-if="edu.institution" class="timeline-place">{{ edu.degree }}</p>
                 </div>
-                <span>{{ edu.period }}</span>
+                <span v-if="edu.period">{{ edu.period }}</span>
               </div>
               <ul v-if="edu.tasks && edu.tasks.length">
                 <li v-for="task in edu.tasks" :key="task">{{ task }}</li>
@@ -246,7 +247,11 @@
             class="contact-card"
           >
             <FontAwesomeIcon :icon="contact.icon" />
-            <span>{{ contact.label }}</span>
+            <span class="contact-card-copy">
+              <strong>{{ contact.label }}</strong>
+              <span>{{ contact.description ?? t[contact.descriptionKey] }}</span>
+            </span>
+            <span class="contact-card-arrow" aria-hidden="true">↗</span>
           </a>
         </div>
       </section>
@@ -257,192 +262,242 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onBeforeUnmount, onMounted } from 'vue'
+import { ref, computed, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import SkillBadge from './components/SkillBadge.vue'
 
-const currentLanguage = ref('en')
+const languageStorageKey = 'portfolio-language'
+const getInitialLanguage = () => {
+  try {
+    const saved = localStorage.getItem(languageStorageKey)
+    if (saved === 'pl' || saved === 'en') return saved
+  } catch {
+    // The language switch also works when browser storage is unavailable.
+  }
+  return navigator.language?.toLowerCase().startsWith('pl') ? 'pl' : 'en'
+}
+
+const currentLanguage = ref(getInitialLanguage())
+const activeSection = ref('home')
+const navigationRef = ref(null)
+const projectGalleryRef = ref(null)
+const projectStart = ref(0)
+const projectVisibleCount = ref(3)
+const projectEnd = computed(() => Math.min(projectStart.value + projectVisibleCount.value, projectsList.value.length))
 const terminalInput = ref('')
 const terminalInputRef = ref(null)
-const draggedSkillGroup = ref(null)
-const dragOverSkillGroup = ref(null)
-const skillGroupOrder = ref(['web', 'infrastructure', 'helpdesk', 'ai'])
-const canDragSkillCards = ref(true)
-let terminalEntryId = 0
-let skillDragMediaQuery
-
-const createTerminalEntry = (command, output, type = 'text') => ({
-  id: terminalEntryId++,
-  command,
-  output,
-  type
-})
+const terminalBodyRef = ref(null)
+const emailAddress = 'jakubkolkowski5@gmail.com'
+let terminalEntryId = 2
+let navigationFrame = 0
+let navigationObserver
+let projectGalleryObserver
+let projectStep = 0
 
 const terminalHistory = ref([
-  createTerminalEntry('whoami', 'IT Specialist / Builder', 'headline'),
-  createTerminalEntry('focus', ['Web Development', 'Infrastructure', 'HelpDesk & documentation'], 'list')
+  { id: 0, command: 'whoami' },
+  { id: 1, command: 'focus' }
 ])
 
-const terminalCommands = {
-  help: {
-    output: ['whoami', 'focus', 'skills', 'projects', 'contact', 'clear'],
-    type: 'list'
-  },
-  whoami: {
-    output: 'IT Specialist / Builder',
-    type: 'headline'
-  },
-  focus: {
-    output: ['Web Development', 'Infrastructure', 'HelpDesk & documentation'],
-    type: 'list'
-  },
-  skills: {
-    output: ['Vue.js', 'Laravel', 'Docker', 'Windows Server', 'Active Directory', 'pfSense'],
-    type: 'list'
-  },
-  projects: {
-    output: [
-      'Windows Server 2025 AD & PXE Homelab',
-      'Company Lab in EVE-NG',
-      'Enterprise Homelab & Web Hosting',
-      'Capyhelp Helpdesk App',
-      'Ubuntu Server Infrastructure',
-      'SSH Analyzer Linux'
-    ],
-    type: 'list'
-  },
-  contact: {
-    output: 'jakubkolkowski5@gmail.com',
-    type: 'text'
+const focusTerminal = () => {
+  terminalInputRef.value?.focus({ preventScroll: true })
+  if (terminalBodyRef.value) {
+    terminalBodyRef.value.scrollTop = terminalBodyRef.value.scrollHeight
   }
 }
-
-const focusTerminal = () => {
-  terminalInputRef.value?.focus()
-}
-
-const syncSkillDragMode = () => {
-  canDragSkillCards.value = !skillDragMediaQuery?.matches
-}
-
-onMounted(() => {
-  skillDragMediaQuery = window.matchMedia('(max-width: 780px)')
-  syncSkillDragMode()
-  skillDragMediaQuery.addEventListener('change', syncSkillDragMode)
-})
-
-onBeforeUnmount(() => {
-  skillDragMediaQuery?.removeEventListener('change', syncSkillDragMode)
-})
 
 const runTerminalCommand = async () => {
   const command = terminalInput.value.trim()
-
-  if (!command) {
-    return
-  }
+  if (!command) return
 
   terminalInput.value = ''
-
   if (command.toLowerCase() === 'clear') {
     terminalHistory.value = []
-    await nextTick()
-    focusTerminal()
-    return
+  } else {
+    terminalHistory.value.push({ id: terminalEntryId++, command })
   }
-
-  const response = terminalCommands[command.toLowerCase()]
-
-  terminalHistory.value.push(
-    response
-      ? createTerminalEntry(command, response.output, response.type)
-      : createTerminalEntry(command, `Command not found: ${command}. Type help.`, 'text')
-  )
 
   await nextTick()
   focusTerminal()
 }
 
 const contactLinks = [
-  { label: 'Email', href: 'mailto:jakubkolkowski5@gmail.com', icon: ['fas', 'envelope'] },
-  { label: 'GitHub', href: 'https://github.com/dj-kolkol2002', icon: ['fab', 'github'], external: true },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/', icon: ['fab', 'linkedin'], external: true }
+  { label: 'E-mail', description: emailAddress, href: `mailto:${emailAddress}`, icon: ['fas', 'envelope'], external: false },
+  { label: 'GitHub', descriptionKey: 'githubDescription', href: 'https://github.com/dj-kolkol2002', icon: ['fab', 'github'], external: true },
+  { label: 'LinkedIn', descriptionKey: 'linkedinDescription', href: 'https://www.linkedin.com/in/jakub-ko%C5%82kowski-3932912b7/', icon: ['fab', 'linkedin'], external: true }
 ]
 
-// Toggle language
 const toggleLanguage = () => {
   currentLanguage.value = currentLanguage.value === 'en' ? 'pl' : 'en'
 }
+
+const updateActiveSection = () => {
+  navigationFrame = 0
+  const navHeight = parseFloat(document.documentElement.style.getPropertyValue('--navigation-height')) || 0
+  const threshold = navHeight + (window.innerHeight - navHeight) * 0.25
+  let sectionId = 'home'
+  for (const section of document.querySelectorAll('main > section')) {
+    if (section.getBoundingClientRect().top <= threshold) {
+      sectionId = section.id
+    }
+  }
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+    sectionId = 'contact'
+  }
+  activeSection.value = sectionId
+}
+
+const scheduleNavigationUpdate = () => {
+  if (!navigationFrame) navigationFrame = requestAnimationFrame(updateActiveSection)
+}
+
+const syncNavigationLayout = () => {
+  const nav = navigationRef.value
+  if (!nav) return
+  const isTopNavigation = getComputedStyle(nav).getPropertyValue('--nav-layout').trim() === 'top'
+  const height = isTopNavigation ? Math.ceil(nav.getBoundingClientRect().height) : 0
+  document.documentElement.style.setProperty('--navigation-height', `${height}px`)
+  scheduleNavigationUpdate()
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', scheduleNavigationUpdate, { passive: true })
+  window.addEventListener('resize', syncNavigationLayout)
+  navigationObserver = new ResizeObserver(syncNavigationLayout)
+  navigationObserver.observe(navigationRef.value)
+  projectGalleryObserver = new ResizeObserver(syncProjectGallery)
+  projectGalleryObserver.observe(projectGalleryRef.value)
+  syncProjectGallery()
+  syncNavigationLayout()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', scheduleNavigationUpdate)
+  window.removeEventListener('resize', syncNavigationLayout)
+  navigationObserver?.disconnect()
+  projectGalleryObserver?.disconnect()
+  document.documentElement.style.removeProperty('--navigation-height')
+  cancelAnimationFrame(navigationFrame)
+})
 
 // Translations
 const translations = {
   en: {
     hello: 'Hello, I am',
-    subtitle: 'Self taught IT Specialist',
-    description: 'Young IT enthusiast from Poland, passionate about technology and continuous learning.',
-    contactAction: 'Contact me here',
+    subtitle: 'Junior IT Specialist | Systems & Networks',
+    description: 'I support business users and configure workstations. I develop my Windows/Linux administration and networking skills in hands-on labs.',
+    contactAction: 'Get in touch',
     projectsAction: 'Show my work',
-    webDev: 'Web Development',
+    webDev: 'Development & Automation',
     skills: 'Skills',
     infrastructure: 'Infrastructure',
-    helpdesk: 'HelpDesk',
+    helpdesk: 'IT Support',
     aiTools: 'AI Tools',
-    workExperience: 'Work Experience',
     education: 'Education',
     certifications: 'Certifications',
-    contact: 'Contact and Social',
+    contact: 'Contact',
     projects: 'Projects',
     repository: 'Repository',
     newTab: 'opens in a new tab',
     technologies: 'Technologies used',
-    projectsIntro: 'Hands-on Windows and Linux administration, enterprise networking, self-hosting, helpdesk development and security automation.',
-    skillsIntro: 'Tools and technologies I use across web development, infrastructure, helpdesk work and AI-supported workflows.',
-    experienceIntro: 'Hands-on IT work across field installation, support, documentation and customer-facing technical tasks.',
-    contactIntro: 'The fastest way to reach me is email. You can also find my code and professional profile below.',
+    projectsIntro: 'Hands-on Windows and Linux administration, enterprise networking, self-hosting, helpdesk development, workstation onboarding and kiosk systems.',
+    projectGalleryHint: 'Swipe or use the arrows to browse.',
+    projectGalleryLabel: 'Project gallery',
+    previousProjects: 'Previous projects',
+    nextProjects: 'Next projects',
+    skillsIntro: 'Technologies and tools from my IT support work and personal infrastructure and development projects.',
+    contactIntro: 'Email me to discuss an IT role or a project. You can also find me on LinkedIn and GitHub.',
     navHome: 'Home',
     navProjects: 'Projects',
     navSkills: 'Skills',
-    navExperience: 'Experience',
-    navContact: 'Contact'
+    navContact: 'Contact',
+    navSkillsShort: 'Skills',
+    navigationLabel: 'Portfolio navigation',
+    switchLanguage: 'Switch to Polish',
+    skillDescriptions: {
+      infrastructure: 'Servers, networks and virtual environments.',
+      helpdesk: 'User support and service request management.',
+      automation: 'Scripts, applications and repeatable workflows.',
+      ai: 'AI assistants, local models and automation.'
+    },
+    githubDescription: 'Code & projects',
+    linkedinDescription: 'Professional profile',
+    terminalLabel: 'Interactive profile terminal',
+    terminalCommandLabel: 'Terminal command',
+    terminalPlaceholder: 'type help',
+    terminalHeadline: 'Junior IT Specialist',
+    terminalFocus: ['IT support', 'Windows / Linux & networks', 'Automation'],
+    terminalUnknown: 'Command not found:',
+    terminalHelpHint: 'Type help to see available commands.'
   },
   pl: {
     hello: 'Cześć, jestem',
-    subtitle: 'Specjalista IT samouk',
-    description: 'Młody entuzjasta IT z Polski, pasjonujący się technologią i ciągłym rozwojem.',
+    subtitle: 'Junior IT | Systemy i sieci',
+    description: 'Wspieram użytkowników biznesowych i konfiguruję stanowiska. Rozwijam umiejętności administracji Windows/Linux i sieci we własnych laboratoriach.',
     contactAction: 'Kontakt',
     projectsAction: 'Zobacz projekty',
-    webDev: 'Web Development',
+    webDev: 'Programowanie i automatyzacja',
     skills: 'Umiejętności',
     infrastructure: 'Infrastruktura',
-    helpdesk: 'HelpDesk',
+    helpdesk: 'Wsparcie IT',
     aiTools: 'Narzędzia AI',
-    workExperience: 'Doświadczenie zawodowe',
     education: 'Edukacja',
     certifications: 'Certyfikaty',
-    contact: 'Kontakt i Social',
+    contact: 'Kontakt',
     projects: 'Projekty',
     repository: 'Repozytorium',
     newTab: 'otwiera się w nowej karcie',
     technologies: 'Wykorzystane technologie',
-    projectsIntro: 'Praktyczne projekty z administracji Windows i Linux, sieci firmowych, self-hostingu, aplikacji helpdesk oraz automatyzacji bezpieczeństwa.',
-    skillsIntro: 'Narzędzia i technologie, których używam przy web developmencie, infrastrukturze, pracy helpdesk oraz procesach wspieranych przez AI.',
-    experienceIntro: 'Praktyczne doświadczenie IT obejmujące instalacje terenowe, support, dokumentację i zadania techniczne przy kontakcie z klientem.',
-    contactIntro: 'Najszybciej złapiesz mnie przez email. Poniżej znajdziesz też mój kod i profil zawodowy.',
+    projectsIntro: 'Praktyczne projekty z administracji Windows i Linux, sieci firmowych, self-hostingu, aplikacji helpdesk, onboardingu stacji roboczych i systemów kioskowych.',
+    projectGalleryHint: 'Przesuń lub użyj strzałek, aby przeglądać.',
+    projectGalleryLabel: 'Galeria projektów',
+    previousProjects: 'Poprzednie projekty',
+    nextProjects: 'Następne projekty',
+    skillsIntro: 'Technologie i narzędzia z pracy we wsparciu IT oraz własnych projektów infrastrukturalnych i programistycznych.',
+    contactIntro: 'Napisz w sprawie pracy w IT lub współpracy przy projekcie. Znajdziesz mnie również na LinkedIn i GitHubie.',
     navHome: 'Start',
     navProjects: 'Projekty',
-    navSkills: 'Skills',
-    navExperience: 'Doświadczenie',
-    navContact: 'Kontakt'
+    navSkills: 'Umiejętności',
+    navContact: 'Kontakt',
+    navSkillsShort: 'Umiejęt.',
+    navigationLabel: 'Nawigacja portfolio',
+    switchLanguage: 'Zmień język na angielski',
+    skillDescriptions: {
+      infrastructure: 'Serwery, sieci i środowiska wirtualne.',
+      helpdesk: 'Pomoc użytkownikom i zarządzanie zgłoszeniami.',
+      automation: 'Skrypty, aplikacje i automatyzacja zadań.',
+      ai: 'Asystenci AI, lokalne modele i automatyzacja.'
+    },
+    githubDescription: 'Kod i projekty',
+    linkedinDescription: 'Profil zawodowy',
+    terminalLabel: 'Interaktywny terminal profilu',
+    terminalCommandLabel: 'Polecenie terminala',
+    terminalPlaceholder: 'wpisz help',
+    terminalHeadline: 'Junior IT',
+    terminalFocus: ['Wsparcie IT', 'Windows / Linux i sieci', 'Automatyzacja'],
+    terminalUnknown: 'Nieznane polecenie:',
+    terminalHelpHint: 'Wpisz help, aby zobaczyć dostępne polecenia.'
   }
 }
 
 const t = computed(() => translations[currentLanguage.value])
 
+watch(currentLanguage, (language) => {
+  document.documentElement.lang = language
+  document.title = `Jakub Kołkowski — ${t.value.subtitle}`
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t.value.description)
+  try {
+    localStorage.setItem(languageStorageKey, language)
+  } catch {
+    // Keep the current selection for this visit when storage is unavailable.
+  }
+  scheduleNavigationUpdate()
+}, { immediate: true })
+
 const navLinks = computed(() => [
-  { href: '#home', label: t.value.navHome, icon: ['fas', 'terminal'] },
-  { href: '#projects', label: t.value.navProjects, icon: ['fas', 'project-diagram'] },
-  { href: '#skills', label: t.value.navSkills, icon: ['fas', 'code'] },
-  { href: '#experience', label: t.value.navExperience, icon: ['fas', 'briefcase'] },
-  { href: '#contact', label: t.value.navContact, icon: ['fas', 'envelope'] }
+  { href: '#home', label: t.value.navHome, shortLabel: t.value.navHome, icon: ['fas', 'terminal'] },
+  { href: '#projects', label: t.value.navProjects, shortLabel: t.value.navProjects, icon: ['fas', 'project-diagram'] },
+  { href: '#skills', label: t.value.navSkills, shortLabel: t.value.navSkillsShort, icon: ['fas', 'code'] },
+  { href: '#contact', label: t.value.navContact, shortLabel: t.value.navContact, icon: ['fas', 'envelope'] }
 ])
 
 const projectMedia = {
@@ -457,8 +512,8 @@ const projectMedia = {
     width: 960,
     height: 726,
     alt: {
-      en: 'Windows Server 2025 graphic over illuminated server racks',
-      pl: 'Grafika Windows Server 2025 na tle podświetlonych szaf serwerowych'
+      en: 'Windows 11 installer showing disk selection in the PXE deployment lab',
+      pl: 'Instalator Windows 11 z wyborem dysku w laboratorium wdrażania przez PXE'
     }
   },
   network: {
@@ -506,28 +561,29 @@ const projectMedia = {
       pl: 'Panel Capyhelp z kolejką zgłoszeń, filtrami, statusami i priorytetami'
     }
   },
-  ubuntu: {
-    layout: 'linux',
-    file: 'ubuntu-server-707.webp',
+  onboarding: {
+    layout: 'onboarding',
+    file: 'onboarding-manager-935.webp',
     sourceFiles: [
-      { file: 'ubuntu-server-480.webp', width: 480 },
-      { file: 'ubuntu-server-707.webp', width: 707 }
+      { file: 'onboarding-manager-480.webp', width: 480 },
+      { file: 'onboarding-manager-720.webp', width: 720 },
+      { file: 'onboarding-manager-935.webp', width: 935 }
     ],
-    width: 707,
-    height: 432,
+    width: 935,
+    height: 550,
     alt: {
-      en: 'Ubuntu Server logo on an orange background',
-      pl: 'Logo Ubuntu Server na pomarańczowym tle'
+      en: 'Onboarding Manager preflight screen checking a Windows 11 workstation before setup',
+      pl: 'Ekran kontroli wstępnej Onboarding Managera sprawdzający stację roboczą Windows 11 przed konfiguracją'
     }
   },
-  ssh: {
-    layout: 'security',
-    file: 'ssh-analyzer-419.webp',
-    width: 419,
-    height: 274,
+  kiosk: {
+    layout: 'kiosk',
+    file: 'raspberry-pi-kiosk-364.webp',
+    width: 364,
+    height: 289,
     alt: {
-      en: 'SSH Analyzer report showing the SSH port and source of failed login attempts',
-      pl: 'Raport SSH Analyzer z portem SSH i źródłem nieudanych prób logowania'
+      en: 'Raspberry Pi-class ARM64 computer configured as an enterprise web kiosk',
+      pl: 'Komputer ARM64 klasy Raspberry Pi skonfigurowany jako firmowy kiosk internetowy'
     }
   }
 }
@@ -567,20 +623,20 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Capyhelp-Helpdesk-App'
     },
     {
-      id: 'ubuntu',
-      title: 'Ubuntu Server Infrastructure',
-      description: 'Ubuntu Server deployment with hardened SSH, Samba file sharing, WordPress on a LAMP stack, SSL and automated rotating backups using Bash and cron.',
-      category: 'Linux Infrastructure',
-      technologies: ['Ubuntu Server', 'OpenSSH', 'Samba', 'Bash / Cron'],
-      link: 'https://github.com/dj-kolkol2002/Ubuntu-Server-Infrastructure'
+      id: 'onboarding',
+      title: 'Onboarding Manager',
+      description: 'Windows 11 desktop app that checks a workstation, installs approved software with WinGet or Chocolatey, assigns its computer name and can join it to Active Directory.',
+      category: 'Windows Automation',
+      technologies: ['.NET 8', 'WPF', 'WinGet / Chocolatey', 'Active Directory'],
+      link: 'https://github.com/dj-kolkol2002/Autoinstalator_Onboarding'
     },
     {
-      id: 'ssh',
-      title: 'SSH Analyzer Linux',
-      description: 'Bash security tool that parses SSH authentication logs, detects the active SSH port, ranks sources of failed logins and can automatically block abusive IPs with UFW.',
-      category: 'Security Automation',
-      technologies: ['Bash', 'OpenSSH', 'UFW', 'Log Analysis'],
-      link: 'https://github.com/dj-kolkol2002/SSH-Analyzer-Linux'
+      id: 'kiosk',
+      title: 'Raspberry Pi Enterprise Web Kiosk',
+      description: 'Minimal Debian 13 ARM64 kiosk that starts an Openbox session and Firefox ESR in fullscreen mode, relaunches the browser after exit and supports remote diagnostics.',
+      category: 'Linux Kiosk',
+      technologies: ['Debian 13', 'X.Org / Openbox', 'Firefox ESR', 'Bash / systemd'],
+      link: 'https://github.com/dj-kolkol2002/Raspberry-Pie-Web-KIOSK'
     }
   ],
   pl: [
@@ -617,20 +673,20 @@ const projectsData = {
       link: 'https://github.com/dj-kolkol2002/Capyhelp-Helpdesk-App'
     },
     {
-      id: 'ubuntu',
-      title: 'Ubuntu Server Infrastructure',
-      description: 'Ubuntu Server z utwardzonym SSH, Sambą, WordPressem na stosie LAMP, HTTPS oraz automatycznymi kopiami zapasowymi z rotacją w Bashu i cronie.',
-      category: 'Infrastruktura Linux',
-      technologies: ['Ubuntu Server', 'OpenSSH', 'Samba', 'Bash / Cron'],
-      link: 'https://github.com/dj-kolkol2002/Ubuntu-Server-Infrastructure'
+      id: 'onboarding',
+      title: 'Onboarding Manager',
+      description: 'Aplikacja desktopowa dla Windows 11, która sprawdza stację roboczą, instaluje zatwierdzone programy przez WinGet lub Chocolatey, nadaje nazwę komputera i może dołączyć go do Active Directory.',
+      category: 'Automatyzacja Windows',
+      technologies: ['.NET 8', 'WPF', 'WinGet / Chocolatey', 'Active Directory'],
+      link: 'https://github.com/dj-kolkol2002/Autoinstalator_Onboarding'
     },
     {
-      id: 'ssh',
-      title: 'SSH Analyzer Linux',
-      description: 'Skrypt Bash analizujący logi SSH, wykrywający aktywny port i źródła ataków brute-force oraz opcjonalnie blokujący adresy IP przez UFW.',
-      category: 'Cyberbezpieczeństwo',
-      technologies: ['Bash', 'OpenSSH', 'UFW', 'Analiza logów'],
-      link: 'https://github.com/dj-kolkol2002/SSH-Analyzer-Linux'
+      id: 'kiosk',
+      title: 'Raspberry Pi Enterprise Web Kiosk',
+      description: 'Minimalny kiosk na Debianie 13 ARM64, który uruchamia sesję Openbox i Firefox ESR w trybie pełnoekranowym, wznawia przeglądarkę po zamknięciu i umożliwia zdalną diagnostykę.',
+      category: 'Kiosk Linux',
+      technologies: ['Debian 13', 'X.Org / Openbox', 'Firefox ESR', 'Bash / systemd'],
+      link: 'https://github.com/dj-kolkol2002/Raspberry-Pie-Web-KIOSK'
     }
   ]
 }
@@ -650,77 +706,51 @@ const projectsList = computed(() => projectsData[currentLanguage.value].map((pro
   }
 }))
 
-const workExperienceData = {
-  en: [
-    {
-      position: 'Junior IT Field Technician',
-      company: 'M3 Group',
-      period: '2026',
-      tasks: [
-        'Installation of cable trays and laying of low-voltage cabling',
-        'Comprehensive construction and organization of RACK cabinets, including termination of patch panels and network outlets',
-        'Installation of CCTV cameras, Access Points and alarms'
-      ]
-    },
-    {
-      position: 'Junior Customer Specialist',
-      company: 'Prociv Sp. z o.o',
-      period: '2025',
-      tasks: [
-        'Customer support through HelpDesk ticketing system',
-        'WordPress management and maintenance',
-        'Creating documentation and user guides'
-      ]
-    },
-    {
-      position: 'IT Support Intern',
-      company: '2M Marek Workiewicz',
-      period: '2024',
-      tasks: [
-        'Computer assembly and configuration in educational institutions',
-        'Workstation and server installation and configuration',
-        'IT procedures documentation'
-      ]
-    }
-  ],
-  pl: [
-    {
-      position: 'Młodszy Instalator sieci IT',
-      company: 'M3 Group',
-      period: '2026',
-      tasks: [
-        'Montaż tras kablowych oraz układanie okablowania teletechnicznego',
-        'Kompleksowa budowa i organizacja szaf RACK, w tym terminowanie patchpaneli i gniazd sieciowych',
-        'Instalacja kamer CCTV, Access Point i alarmów'
-      ]
-    },
-    {
-      position: 'Młodszy Specjalista ds. Obsługi Klienta',
-      company: 'Prociv Sp. z o.o',
-      period: '2025',
-      tasks: [
-        'Obsługa klientów w systemie ticketowym HelpDesk',
-        'Zarządzanie i utrzymanie WordPressa',
-        'Tworzenie dokumentacji i instrukcji dla użytkowników'
-      ]
-    },
-    {
-      position: 'Praktykant IT Support',
-      company: '2M Marek Workiewicz',
-      period: '2024',
-      tasks: [
-        'Montaż i konfiguracja komputerów w instytucjach edukacyjnych',
-        'Instalacja i konfiguracja stacji roboczych i serwerów',
-        'Dokumentacja procedur IT'
-      ]
-    }
-  ]
+const updateProjectPosition = () => {
+  if (!projectGalleryRef.value || !projectStep) return
+  const lastStart = Math.max(0, projectsList.value.length - projectVisibleCount.value)
+  projectStart.value = Math.max(0, Math.min(lastStart, Math.round(projectGalleryRef.value.scrollLeft / projectStep)))
 }
 
-const workExperience = computed(() => workExperienceData[currentLanguage.value])
+const syncProjectGallery = () => {
+  const gallery = projectGalleryRef.value
+  const card = gallery?.querySelector('.project-card')
+  if (!card) return
+  const styles = getComputedStyle(gallery)
+  projectVisibleCount.value = Number(styles.getPropertyValue('--project-columns')) || 1
+  projectStep = card.getBoundingClientRect().width + parseFloat(styles.columnGap)
+  const start = Math.min(projectStart.value, Math.max(0, projectsList.value.length - projectVisibleCount.value))
+  gallery.scrollTo({ left: start * projectStep, behavior: 'instant' })
+  updateProjectPosition()
+}
+
+const moveProjects = (offset) => {
+  const lastStart = Math.max(0, projectsList.value.length - projectVisibleCount.value)
+  const index = Math.max(0, Math.min(lastStart, projectStart.value + offset))
+  projectGalleryRef.value?.scrollTo({
+    left: index * projectStep,
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+  })
+}
+
+const handleProjectGalleryKey = (event) => {
+  if (event.target !== event.currentTarget) return
+  const offsets = { ArrowLeft: -1, ArrowRight: 1, Home: -projectsList.value.length, End: projectsList.value.length }
+  if (!Object.hasOwn(offsets, event.key)) return
+  event.preventDefault()
+  moveProjects(offsets[event.key])
+}
 
 const educationData = {
   en: [
+    {
+      institution: 'Uniwersytet Ideis Wrocław',
+      degree: 'National Security - Cybersecurity',
+      period: '2026 - present',
+      tasks: [
+        "Master's degree"
+      ]
+    },
     {
       institution: 'University of Applied Sciences in Nysa',
       degree: 'Computer Science - Network and Information Systems Security',
@@ -731,6 +761,14 @@ const educationData = {
     }
   ],
   pl: [
+    {
+      institution: 'Uniwersytet Ideis Wrocław',
+      degree: 'Bezpieczeństwo Narodowe - Cyberbezpieczeństwo',
+      period: '2026 - obecnie',
+      tasks: [
+        'Magisterskie studia II stopnia'
+      ]
+    },
     {
       institution: 'Państwowa Akademia Nauk Stosowanych w Nysie',
       degree: 'Informatyka - Bezpieczeństwo sieci i systemów informatycznych',
@@ -750,10 +788,14 @@ const certifications = [
   'Cisco CCNA Switching, Routing, and Wireless Essentials',
   'LPI Linux Essentials',
   'Technical Support Fundamentals',
-  'The Bits and Bytes of Computer Networking'
+  'The Bits and Bytes of Computer Networking',
+  'Jira Service Management'
 ]
 
-const webSkills = [
+const automationSkills = [
+  { name: 'PowerShell', icon: ['fas', 'terminal'] },
+  { name: 'Bash', icon: ['fab', 'linux'] },
+  { name: 'Python', icon: ['fab', 'python'] },
   { name: 'Visual Studio Code', icon: ['fas', 'code'] },
   { name: 'Node.js', icon: ['fab', 'node-js'] },
   { name: 'Git', icon: ['fab', 'git'] },
@@ -778,14 +820,15 @@ const infraSkills = [
   { name: 'Tailscale', icon: ['fas', 'network-wired'] },
   { name: 'Windows Server', icon: ['fab', 'windows'] },
   { name: 'Cisco IOS', icon: ['fas', 'network-wired'] },
+  { name: 'UniFi', icon: ['fas', 'network-wired'] },
   { name: 'Debian', icon: ['fab', 'debian'] },
-  { name: 'Bash', icon: ['fab', 'linux'] },
   { name: 'Veeam Backup', icon: ['fas', 'database'] },
   { name: 'Proxmox VE', icon: ['fas', 'server'] },
+  { name: 'Hyper-V', icon: ['fab', 'microsoft'] },
   { name: 'EVE-NG', icon: ['fas', 'network-wired'] },
   { name: 'Nginx', icon: ['fas', 'server'] },
-  { name: 'PowerShell', icon: ['fas', 'terminal'] },
   { name: 'pfSense', icon: ['fas', 'shield-alt'] },
+  { name: 'FortiGate', icon: ['fas', 'shield-alt'] },
   { name: 'TrueNAS', icon: ['fas', 'database'] },
   { name: 'VMware', icon: ['fas', 'server'] }
 ]
@@ -797,19 +840,22 @@ const helpdeskSkills = [
   { name: 'SSH', icon: ['fas', 'terminal'] },
   { name: 'Microsoft 365', icon: ['fab', 'microsoft'] },
   { name: 'TeamViewer', icon: ['fas', 'server'] },
+  { name: 'ScreenConnect', icon: ['fas', 'server'] },
+  { name: 'FortiClient VPN', icon: ['fas', 'shield-alt'] },
+  { name: 'Keeper Security', icon: ['fas', 'shield-alt'] },
   { name: 'Odoo', icon: ['fas', 'server'] },
   { name: 'ITIL', icon: ['fas', 'award'] },
   { name: 'HelpDesk.app', icon: ['fas', 'lightbulb'] },
+  { name: 'GLPI', icon: ['fas', 'lightbulb'] },
   { name: 'ClickUP', icon: ['fas', 'check-square'] },
   { name: 'Discord', icon: ['fab', 'discord'] },
   { name: 'RDP', icon: ['fab', 'windows'] }
 ]
 
 const aiSkills = [
-  { name: 'Github Copilot', icon: ['fab', 'github'] },
+  { name: 'GitHub Copilot', icon: ['fab', 'github'] },
   { name: 'Grok', icon: ['fas', 'brain'] },
   { name: 'Qwen', icon: ['fas', 'laptop-code'] },
-  { name: 'Python', icon: ['fab', 'python'] },
   { name: 'Perplexity', icon: ['fas', 'search'] },
   { name: 'DeepSeek', icon: ['fas', 'search'] },
   { name: 'Gemini', icon: ['fab', 'google'] },
@@ -817,59 +863,50 @@ const aiSkills = [
   { name: 'WriteSonic', icon: ['fas', 'pen-nib'] },
   { name: 'ChatGPT', icon: ['fab', 'openai'] },
   { name: 'Claude', icon: ['fab', 'claude'] },
-  { name: 'Ollama', icon: ['fas', 'laptop-code'] }
+  { name: 'Ollama', icon: ['fas', 'laptop-code'] },
+  { name: 'n8n', icon: ['fas', 'project-diagram'] },
+  { name: 'LM Studio', icon: ['fas', 'laptop-code'] },
+  { name: 'Open WebUI', icon: ['fas', 'server'] },
+  { name: 'Gemini Notebook', icon: ['fab', 'google'] },
+  { name: 'Microsoft Copilot', icon: ['fab', 'microsoft'] },
+  { name: 'Google AI Studio', icon: ['fab', 'google'] }
 ]
 
-const skillGroupsMap = computed(() => ({
-  web: { id: 'web', title: t.value.webDev, icon: ['fas', 'code'], skills: webSkills },
-  infrastructure: { id: 'infrastructure', title: t.value.infrastructure, icon: ['fas', 'server'], skills: infraSkills },
-  helpdesk: { id: 'helpdesk', title: t.value.helpdesk, icon: ['fas', 'lightbulb'], skills: helpdeskSkills },
-  ai: { id: 'ai', title: t.value.aiTools, icon: ['fas', 'brain'], skills: aiSkills }
+const createSkillGroup = (id, title, icon, skills, priorityNames) => ({
+  id,
+  title,
+  icon,
+  skills: [
+    ...priorityNames.map(name => skills.find(skill => skill.name === name)),
+    ...skills.filter(skill => !priorityNames.includes(skill.name))
+  ]
+})
+
+const skillGroups = computed(() => [
+  createSkillGroup('infrastructure', t.value.infrastructure, ['fas', 'server'], infraSkills,
+    ['Active Directory', 'Windows Server', 'Ubuntu Server', 'Cisco IOS', 'Proxmox VE', 'pfSense']),
+  createSkillGroup('helpdesk', t.value.helpdesk, ['fas', 'lightbulb'], helpdeskSkills,
+    ['Microsoft 365', 'Jira', 'GLPI', 'RDP', 'Discord']),
+  createSkillGroup('automation', t.value.webDev, ['fas', 'code'], automationSkills,
+    ['PowerShell', 'Bash', 'Python', 'Docker']),
+  createSkillGroup('ai', t.value.aiTools, ['fas', 'brain'], aiSkills,
+    ['Ollama', 'GitHub Copilot'])
+])
+
+const terminalCommands = computed(() => ({
+  help: { output: ['whoami', 'focus', 'skills', 'projects', 'contact', 'clear'], type: 'list' },
+  whoami: { output: t.value.terminalHeadline, type: 'headline' },
+  focus: { output: t.value.terminalFocus, type: 'list' },
+  skills: { output: ['Windows Server', 'Active Directory', 'Linux', 'pfSense', 'PowerShell', 'Bash'], type: 'list' },
+  projects: { output: projectsList.value.map(project => project.title), type: 'list' },
+  contact: { output: emailAddress, type: 'text' }
 }))
 
-const skillGroups = computed(() => skillGroupOrder.value.map((id) => skillGroupsMap.value[id]))
-
-const startSkillGroupDrag = (groupId, event) => {
-  draggedSkillGroup.value = groupId
-  dragOverSkillGroup.value = null
-
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setData('text/plain', groupId)
-  }
-}
-
-const clearSkillGroupDragOver = (groupId) => {
-  if (dragOverSkillGroup.value === groupId) {
-    dragOverSkillGroup.value = null
-  }
-}
-
-const dropSkillGroup = (targetGroupId) => {
-  const sourceGroupId = draggedSkillGroup.value
-
-  if (!sourceGroupId || sourceGroupId === targetGroupId) {
-    endSkillGroupDrag()
-    return
-  }
-
-  const nextOrder = [...skillGroupOrder.value]
-  const sourceIndex = nextOrder.indexOf(sourceGroupId)
-  const targetIndex = nextOrder.indexOf(targetGroupId)
-
-  if (sourceIndex === -1 || targetIndex === -1) {
-    endSkillGroupDrag()
-    return
-  }
-
-  nextOrder.splice(sourceIndex, 1)
-  nextOrder.splice(targetIndex, 0, sourceGroupId)
-  skillGroupOrder.value = nextOrder
-  endSkillGroupDrag()
-}
-
-const endSkillGroupDrag = () => {
-  draggedSkillGroup.value = null
-  dragOverSkillGroup.value = null
-}
+const terminalEntries = computed(() => terminalHistory.value.map(entry => {
+  const command = entry.command.toLowerCase()
+  const response = Object.hasOwn(terminalCommands.value, command)
+    ? terminalCommands.value[command]
+    : { output: `${t.value.terminalUnknown} ${entry.command}. ${t.value.terminalHelpHint}`, type: 'text' }
+  return { ...entry, ...response }
+}))
 </script>
